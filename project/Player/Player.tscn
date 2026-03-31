@@ -1,0 +1,1149 @@
+[gd_scene format=3 uid="uid://b3265k8ebm0vp"]
+
+[ext_resource type="Script" uid="uid://d2kuh81xmfn0j" path="res://Player/player.gd" id="1_34fy8"]
+[ext_resource type="Texture2D" uid="uid://dj8635lmd5oyn" path="res://Assets/Sprite Sheets/boxer-spritesheet.png" id="1_f501w"]
+[ext_resource type="PackedScene" uid="uid://bysbmq2osg5i2" path="res://State Machines/StateMachine.tscn" id="2_qm0nl"]
+[ext_resource type="Texture2D" uid="uid://bt76al0e22kov" path="res://Assets/Sprite Sheets/boxer-bonesly-Sheet.png" id="3_mstqf"]
+
+[sub_resource type="GDScript" id="GDScript_q5sgk"]
+script/source = "extends Area2D
+
+@export var Actor : Node
+const POWER = 100
+const DAMAGE = 3
+
+func _on_body_entered(body):
+	var direction = (body.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if body is RigidBody2D:
+		body.interacted(force)
+	elif body is Enemy:
+		body.apply_knockback()
+
+func _on_area_entered(area):
+	var direction = (area.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if area is HurtBox:
+		area.taken_hit(force, DAMAGE)
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n2o1t"]
+size = Vector2(7, 15)
+
+[sub_resource type="GDScript" id="GDScript_26onm"]
+script/source = "extends Area2D
+
+@export var Actor : Node
+const POWER = 50
+const DAMAGE = 3
+
+func _on_body_entered(body):
+	var direction = (body.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if body is RigidBody2D:
+		body.interacted(force)
+	elif body is Enemy:
+		body.apply_knockback()
+
+func _on_area_entered(area):
+	var direction = (area.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if area is HurtBox:
+		area.taken_hit(force, DAMAGE)
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2hyr6"]
+size = Vector2(14, 8)
+
+[sub_resource type="GDScript" id="GDScript_6taqn"]
+script/source = "extends Area2D
+
+@export var Actor : Node
+const POWER = 100
+const DAMAGE = 3
+
+func _on_body_entered(body):
+	var direction = (body.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if body is RigidBody2D:
+		body.interacted(force)
+	elif body is Enemy:
+		body.apply_knockback()
+
+func _on_area_entered(area):
+	var direction = (area.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if area is HurtBox:
+		area.taken_hit(force, DAMAGE)
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0vigf"]
+size = Vector2(17, 7)
+
+[sub_resource type="GDScript" id="GDScript_u32uk"]
+script/source = "extends Area2D
+
+@export var Actor : Node
+const POWER = 120
+const DAMAGE = 3
+
+func _on_body_entered(body):
+	var direction = (body.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if body is RigidBody2D:
+		body.interacted(force)
+	elif body is Enemy:
+		body.apply_knockback()
+
+func _on_area_entered(area):
+	var direction = (area.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if area is HurtBox:
+		area.taken_hit(force, DAMAGE)
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6fb6j"]
+size = Vector2(15.5, 10)
+
+[sub_resource type="GDScript" id="GDScript_ll5as"]
+script/source = "extends Area2D
+
+@export var Actor : Node
+const POWER = 100
+const DAMAGE = 3
+
+func _on_body_entered(body):
+	var direction = (body.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if body is RigidBody2D:
+		body.interacted(force)
+	elif body is Enemy:
+		body.apply_knockback()
+
+func _on_area_entered(area):
+	var direction = (area.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if area is HurtBox:
+		area.taken_hit(force, DAMAGE)
+"
+
+[sub_resource type="GDScript" id="GDScript_ixxin"]
+script/source = "extends Area2D
+
+@export var Actor : Node
+const POWER = 75
+const DAMAGE = 3
+
+func _on_body_entered(body):
+	var direction = (body.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if body is RigidBody2D:
+		body.interacted(force)
+	elif body is Enemy:
+		body.apply_knockback()
+
+func _on_area_entered(area):
+	var direction = (area.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if area is HurtBox:
+		area.taken_hit(force, DAMAGE)
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yml3j"]
+size = Vector2(15.5, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nf6ms"]
+size = Vector2(15, 21)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q557b"]
+atlas = ExtResource("1_f501w")
+region = Rect2(180, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j1flq"]
+atlas = ExtResource("1_f501w")
+region = Rect2(30, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yb5gu"]
+atlas = ExtResource("1_f501w")
+region = Rect2(60, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mbsus"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(1020, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_elqnn"]
+atlas = ExtResource("1_f501w")
+region = Rect2(690, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yb0vl"]
+atlas = ExtResource("1_f501w")
+region = Rect2(720, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_llb23"]
+atlas = ExtResource("1_f501w")
+region = Rect2(750, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ch1sj"]
+atlas = ExtResource("1_f501w")
+region = Rect2(510, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jgx80"]
+atlas = ExtResource("1_f501w")
+region = Rect2(0, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x6t0q"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(0, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jaxkp"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(30, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_427g8"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(60, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c5edf"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(90, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0cu2j"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(120, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d2on1"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(150, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w6j0e"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(180, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pndgh"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(210, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s1wgv"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(240, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5unv2"]
+atlas = ExtResource("1_f501w")
+region = Rect2(120, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jmu3n"]
+atlas = ExtResource("1_f501w")
+region = Rect2(360, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_403vs"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(1020, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1tv2g"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(840, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fvbnp"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(870, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vfugl"]
+atlas = ExtResource("3_mstqf")
+region = Rect2(900, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xppde"]
+atlas = ExtResource("1_f501w")
+region = Rect2(270, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0o8hc"]
+atlas = ExtResource("1_f501w")
+region = Rect2(300, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_51080"]
+atlas = ExtResource("1_f501w")
+region = Rect2(330, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wbvik"]
+atlas = ExtResource("1_f501w")
+region = Rect2(390, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7454o"]
+atlas = ExtResource("1_f501w")
+region = Rect2(570, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gqjlt"]
+atlas = ExtResource("1_f501w")
+region = Rect2(600, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_utsve"]
+atlas = ExtResource("1_f501w")
+region = Rect2(630, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r4sgt"]
+atlas = ExtResource("1_f501w")
+region = Rect2(660, 0, 30, 40)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xnr8x"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q557b")
+}],
+"loop": true,
+"name": &"cross",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j1flq")
+}],
+"loop": true,
+"name": &"crouch",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yb5gu")
+}],
+"loop": true,
+"name": &"crouch_jab",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mbsus")
+}],
+"loop": true,
+"name": &"down_aerial",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_elqnn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_elqnn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yb0vl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yb0vl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_llb23")
+}],
+"loop": false,
+"name": &"hook",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ch1sj")
+}],
+"loop": true,
+"name": &"hurt",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jgx80")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x6t0q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jaxkp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_427g8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c5edf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0cu2j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d2on1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w6j0e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pndgh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s1wgv")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5unv2")
+}],
+"loop": true,
+"name": &"jab",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jmu3n")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_403vs")
+}, {
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_1tv2g")
+}, {
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_fvbnp")
+}, {
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_vfugl")
+}],
+"loop": true,
+"name": &"pogo",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xppde")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0o8hc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0o8hc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0o8hc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_51080")
+}],
+"loop": false,
+"name": &"power_cross",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wbvik")
+}],
+"loop": true,
+"name": &"up_aerial",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7454o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gqjlt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_utsve")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r4sgt")
+}],
+"loop": true,
+"name": &"wallslide",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e26c0"]
+size = Vector2(14.5, 22)
+
+[sub_resource type="GDScript" id="GDScript_holk3"]
+script/source = "extends State
+
+@export var Actor : Node
+
+func _enter_state():
+	if Actor:
+		Actor.velocity = Vector2.ZERO
+	change_animation.emit(\"idle\")
+
+func _physics_update(delta):
+	apply_gravity(Actor, delta)
+	
+	var input = Vector2.ZERO
+	input.x = Input.get_axis(\"ui_left\", \"ui_right\")
+	input.y = Input.get_axis(\"ui_down\", \"ui_up\")
+	
+	if input.x != 0:
+		Actor.new_direction = input.x
+		change_state.emit(\"walk\")
+	if input.y < 0:
+		change_state.emit(\"crouch\")
+
+	check_jumping()
+	check_punching()
+	
+	if not Actor.is_on_floor():
+		change_state.emit(\"fall\")
+	
+func process_punch():
+	if Actor.cross_ready == true:
+		change_state.emit(\"cross\")
+	else:
+		change_state.emit(\"jab\")
+	
+"
+
+[sub_resource type="GDScript" id="GDScript_cq87p"]
+script/source = "extends State
+
+@export var Actor : Node
+
+func _enter_state():
+	change_animation.emit('walk')
+	if Actor:
+		Actor.velocity = Vector2.ZERO
+	
+func _physics_update(delta):
+	apply_gravity(Actor, delta)
+	
+	var input = Vector2.ZERO
+	input.x = Input.get_axis(\"ui_left\", \"ui_right\")
+	input.y = Input.get_axis(\"ui_down\", \"ui_up\")
+	
+	if input.x != 0:
+		move_direction(delta, input)
+	
+	if input.x == 0:
+		change_state.emit(\"idle\")
+	if input.y < 0:
+		change_state.emit(\"crouch\")
+		
+	check_jumping()
+	check_punching()
+	
+	if not Actor.is_on_floor():
+		change_state.emit(\"fall\")
+
+func move_direction(delta, input):
+	if Actor:
+		Actor.velocity.x = move_toward(Actor.velocity.x, Actor.SPEED * input.x, Actor.ACCELLERATION)
+
+func process_punch():
+	if Actor.cross_ready == true:
+		change_state.emit(\"cross\")
+	else:
+		change_state.emit(\"jab\")
+"
+
+[sub_resource type="GDScript" id="GDScript_xfc0g"]
+script/source = "extends State
+
+@export var Actor : Node
+
+func _enter_state():
+	if Actor:
+		Actor.velocity = Vector2.ZERO
+	change_animation.emit(\"crouch\")
+
+func _physics_update(delta):
+	apply_gravity(Actor, delta)
+	var input = Vector2.ZERO
+	input.x = Input.get_axis(\"ui_left\", \"ui_right\")
+	input.y = Input.get_axis(\"ui_up\", \"ui_down\")
+	if input.x != 0 && input.y <= 0:
+		change_state.emit(\"walk\")
+	if input.y <= 0:
+		change_state.emit(\"idle\")
+		
+	check_punching()
+
+func process_punch():
+	change_state.emit(\"crouchjab\")
+"
+
+[sub_resource type="GDScript" id="GDScript_lk3wb"]
+script/source = "extends State
+
+@export var Actor : Node
+
+var fast_fell : bool
+
+func _enter_state():
+	fast_fell = false
+	Actor.velocity.y -= Actor.JUMP_FORCE
+	change_animation.emit(\"jump\")
+
+func _physics_update(delta):
+	apply_gravity(Actor, delta)
+	
+	if not Input.is_action_pressed(\"ui_jump\"):
+		if Actor.velocity.y < 0 && Actor.velocity.y > -100:
+			change_state.emit(\"fall\")
+	if Actor.velocity.y >= 0:
+		change_state.emit(\"fall\")
+	
+	var input = Vector2.ZERO
+	input.x = Input.get_axis(\"ui_left\", \"ui_right\")
+	input.y = Input.get_axis(\"ui_down\", \"ui_up\")
+	
+	if input.x != 0:
+		Actor.new_direction = input.x
+		move_direction(delta, input)
+	
+	if Input.is_action_just_pressed(\"ui_punch\"):
+		process_aerial()
+	
+func move_direction(delta, input):
+	if Actor:
+		Actor.velocity.x = move_toward(Actor.velocity.x, Actor.SPEED * input.x, Actor.ACCELLERATION)
+	
+func process_aerial():
+	if Input.is_action_pressed(\"ui_down\"):
+		change_state.emit(\"downaerial\")
+	if Input.is_action_pressed(\"ui_up\"):
+		change_state.emit(\"upaerial\")
+"
+
+[sub_resource type="GDScript" id="GDScript_7h0ag"]
+script/source = "extends State
+
+@export var Actor : Node
+@export var wallRaycastL : Node
+@export var wallRaycastR : Node
+
+func _enter_state():
+	if Actor.velocity.y < 0:
+		Actor.velocity.y = 0
+	change_animation.emit(\"jump\")
+
+func _physics_update(delta):
+	apply_strong_gravity(Actor, delta)
+	
+	var input = Vector2.ZERO
+	input.x = Input.get_axis(\"ui_left\", \"ui_right\")
+	input.y = Input.get_axis(\"ui_down\", \"ui_up\")
+	
+	if input.x != 0:
+		Actor.new_direction = input.x
+		move_direction(delta, input)
+	
+	
+	if Actor.is_on_floor():
+		change_state.emit(\"idle\")
+	
+	if Input.is_action_just_pressed(\"ui_punch\"):
+		process_aerial()
+		
+	if Actor.is_on_wall():
+		if wallRaycastL.is_colliding() && Input.is_action_pressed(\"ui_left\"):
+			change_state.emit(\"wallslide\")
+		elif wallRaycastR.is_colliding() && Input.is_action_pressed(\"ui_right\"):
+			change_state.emit(\"wallslide\")
+		
+func apply_strong_gravity(actor, delta):
+	actor.velocity.y += actor.STRONG_GRAVITY * delta
+	
+func move_direction(delta, input):
+	if Actor:
+		Actor.velocity.x = move_toward(Actor.velocity.x, Actor.AERIAL_SPEED * input.x, Actor.ACCELLERATION)
+	
+func process_aerial():
+	if Input.is_action_pressed(\"ui_down\"):
+		change_state.emit(\"downaerial\")
+"
+
+[sub_resource type="GDScript" id="GDScript_2330s"]
+script/source = "extends State
+
+@export var Actor : Node
+@export var HitBox : Node
+
+func _enter_state():
+	change_animation.emit(\"crouch_jab\")
+	HitBox.set_disabled(false)
+	await get_tree().create_timer(Actor.JAB_TIME).timeout
+	_on_jab_finished()
+
+func _exit_state():
+	HitBox.set_disabled(true)
+
+func _on_jab_finished():
+	change_state.emit(\"crouch\")
+
+"
+
+[sub_resource type="GDScript" id="GDScript_hb3du"]
+script/source = "extends State
+
+@export var Actor : Node
+@export var HitBox : Node
+var punch_held : bool
+
+func _enter_state():
+	HitBox.set_disabled(false)
+	punch_held = true
+	if Actor:
+		Actor.velocity = Actor.velocity/4
+	change_animation.emit(\"jab\")
+	await get_tree().create_timer(Actor.JAB_TIME).timeout
+	Actor.cross_ready = true
+	_on_jab_finished()
+
+func _exit_state():
+	HitBox.set_disabled(true)
+
+func _physics_update(delta):
+	if Input.is_action_just_released(\"ui_punch\"):
+		punch_held = false
+
+func _on_jab_finished():
+	if Input.is_action_pressed(\"ui_punch\") && punch_held:
+		change_state.emit(\"powercross\")
+	else:
+		change_state.emit(\"idle\")
+"
+
+[sub_resource type="GDScript" id="GDScript_vl204"]
+script/source = "extends State
+
+@export var Actor : Node
+@export var HitBox : Node
+var punch_held : bool
+
+func _enter_state():
+	HitBox.set_disabled(false)
+	punch_held = true
+	if Actor:
+		Actor.velocity = Actor.velocity/2
+		Actor.cross_ready = false
+	change_animation.emit(\"cross\")
+	await get_tree().create_timer(Actor.CROSS_TIME).timeout
+	_on_cross_finished()
+
+func _exit_state():
+	HitBox.set_disabled(true)
+	
+func _physics_update(delta):
+	if Input.is_action_just_released(\"ui_punch\"):
+		punch_held = false
+
+func _on_cross_finished():
+	if Input.is_action_pressed(\"ui_punch\") && punch_held:
+		change_state.emit(\"hook\")
+	else:
+		change_state.emit(\"idle\")
+"
+
+[sub_resource type="GDScript" id="GDScript_cw3vx"]
+script/source = "extends State
+
+@export var Actor : Node
+@export var HitBox : Node
+@export var FORWARD_FORCE = 100
+@export var FRICTION = 400
+
+func _enter_state():
+	HitBox.set_disabled(false)
+	if Actor:
+		Actor.velocity.x += (FORWARD_FORCE * Actor.current_direction)
+	change_animation.emit(\"power_cross\")
+
+func _exit_state():
+	HitBox.set_disabled(true)
+	
+
+func _on_animated_sprite_2d_animation_finished():
+	change_state.emit(\"idle\")
+
+func _physics_update(delta):
+	Actor.velocity.x = move_toward(Actor.velocity.x, 0, FRICTION * delta)
+	
+"
+
+[sub_resource type="GDScript" id="GDScript_ug7xa"]
+script/source = "extends State
+
+@export var Actor : Node
+@export var HitBox : Node
+@export var FORWARD_FORCE = 80
+@export var FRICTION = 400
+
+func _enter_state():
+	HitBox.set_disabled(false)
+	if Actor:
+		Actor.velocity.x += (FORWARD_FORCE * Actor.current_direction)
+	change_animation.emit(\"hook\")
+
+func _exit_state():
+	HitBox.set_disabled(true)
+	
+func _on_animated_sprite_2d_animation_finished():
+	change_state.emit(\"idle\")
+
+func _physics_update(delta):
+	Actor.velocity.x = move_toward(Actor.velocity.x, 0, FRICTION * delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_e0m6j"]
+script/source = "extends State
+
+@export var Actor : Node
+@export var HitBox : Node
+
+func _enter_state():
+	HitBox.set_disabled(false)
+	change_animation.emit(\"down_aerial\")
+	await get_tree().create_timer(Actor.CROSS_TIME).timeout
+	if Actor.velocity.y >= 0:
+		change_state.emit(\"fall\")
+
+func _exit_state():
+	HitBox.call_deferred(\"set_disabled\", true)
+	
+func _physics_update(delta):
+	apply_gravity(Actor, delta)
+
+func _on_aerial_down_body_entered(body):
+	change_state.emit(\"pogo\")
+
+func _on_aerial_down_area_entered(area):
+	change_state.emit(\"pogo\")
+"
+
+[sub_resource type="GDScript" id="GDScript_fnkjj"]
+script/source = "extends State
+
+@export var Actor : Node
+@export var HitBox : Node
+
+func _enter_state():
+	HitBox.set_disabled(false)
+	change_animation.emit(\"up_aerial\")
+	await get_tree().create_timer(Actor.CROSS_TIME).timeout
+	_on_aerial_finished()
+
+func _exit_state():
+	HitBox.set_disabled(true)
+	
+func _physics_update(delta):
+	apply_gravity(Actor, delta)
+
+func _on_aerial_finished():
+	change_state.emit(\"fall\")
+"
+
+[sub_resource type="GDScript" id="GDScript_uwhvp"]
+script/source = "extends State
+
+@export var Actor : Node
+var SLIDE_SPEED = 1
+
+func _enter_state():
+	SLIDE_SPEED = 1
+	swap_directions()
+	Actor.velocity = Vector2.ZERO
+	change_animation.emit(\"wallslide\")
+
+func _physics_update(delta):
+	SLIDE_SPEED = SLIDE_SPEED * (delta * 2 + 1)
+	slide_down()
+	if Input.is_action_just_pressed(\"ui_jump\"):
+		Actor.velocity.x += Actor.WALL_JUMP_FORCE * Actor.current_direction
+		Actor.velocity.y = Actor.velocity.y /2
+		change_state.emit(\"walljump\")
+	if Actor.is_on_floor():
+		change_state.emit(\"idle\")
+	
+func swap_directions():
+	if Actor.velocity.x == 0:
+		Actor.new_direction = Actor.current_direction * -1
+	else:
+		Actor.new_direction = Actor.velocity.x * -1
+		
+
+func slide_down():
+	Actor.velocity.y += SLIDE_SPEED
+"
+
+[sub_resource type="GDScript" id="GDScript_gcesf"]
+script/source = "extends State
+
+@export var Actor : Node
+
+func _enter_state():
+	Actor.velocity.y -= Actor.JUMP_FORCE
+	change_animation.emit(\"jump\")
+
+func _physics_update(delta):
+	apply_gravity(Actor, delta)
+	
+	if Actor.velocity.y >= 0:
+		change_state.emit(\"fall\")
+	
+	if Input.is_action_just_pressed(\"ui_punch\"):
+		process_aerial()
+	
+func process_aerial():
+	if Input.is_action_pressed(\"ui_up\"):
+		change_state.emit(\"upaerial\")
+	if Input.is_action_pressed(\"ui_down\"):
+		change_state.emit(\"downaerial\")
+"
+
+[sub_resource type="GDScript" id="GDScript_tpd5w"]
+script/source = "extends State
+
+@export var Actor : Node
+
+func _enter_state():
+	Actor.velocity.y = 0
+	change_animation.emit(\"pogo\")
+	Actor.velocity.y -= Actor.JUMP_FORCE
+
+func _physics_update(delta):
+	apply_gravity(Actor, delta)
+	
+	if Actor.velocity.y >= 0:
+		change_state.emit(\"fall\")
+	
+	var input = Vector2.ZERO
+	input.x = Input.get_axis(\"ui_left\", \"ui_right\")
+	input.y = Input.get_axis(\"ui_down\", \"ui_up\")
+	
+	if input.x != 0:
+		move_direction(delta, input)
+	
+func move_direction(delta, input):
+	if Actor:
+		Actor.velocity.x = move_toward(Actor.velocity.x, Actor.AERIAL_SPEED * input.x, Actor.ACCELLERATION)
+"
+
+[node name="Player" type="CharacterBody2D" unique_id=1517185507]
+position = Vector2(2.08165e-12, 2.08165e-12)
+collision_layer = 2
+script = ExtResource("1_34fy8")
+
+[node name="WallDetection" type="Node2D" parent="." unique_id=254630862]
+
+[node name="RayCastLeft" type="RayCast2D" parent="WallDetection" unique_id=2091866735]
+position = Vector2(-2.08165e-12, -11)
+rotation = 1.5708
+target_position = Vector2(0, 9)
+hit_from_inside = true
+
+[node name="RayCastRight" type="RayCast2D" parent="WallDetection" unique_id=2051910522]
+position = Vector2(-2.08165e-12, -11)
+rotation = -1.5708
+target_position = Vector2(-9.53674e-07, 11)
+hit_from_inside = true
+
+[node name="Body" type="Node2D" parent="." unique_id=1931603738]
+
+[node name="HitBoxes" type="Node2D" parent="Body" unique_id=1315800802]
+position = Vector2(3, 0)
+
+[node name="AerialDown" type="Area2D" parent="Body/HitBoxes" unique_id=178237681 node_paths=PackedStringArray("Actor")]
+collision_layer = 4
+collision_mask = 24
+script = SubResource("GDScript_q5sgk")
+Actor = NodePath("../../..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/AerialDown" unique_id=509632339]
+position = Vector2(-0.5, -0.5)
+shape = SubResource("RectangleShape2D_n2o1t")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+
+[node name="Jab" type="Area2D" parent="Body/HitBoxes" unique_id=1256578608 node_paths=PackedStringArray("Actor")]
+collision_layer = 4
+collision_mask = 24
+script = SubResource("GDScript_26onm")
+Actor = NodePath("../../..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/Jab" unique_id=1352841504]
+position = Vector2(5, -12)
+shape = SubResource("RectangleShape2D_2hyr6")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+
+[node name="Cross" type="Area2D" parent="Body/HitBoxes" unique_id=1714319355 node_paths=PackedStringArray("Actor")]
+collision_layer = 4
+collision_mask = 24
+script = SubResource("GDScript_6taqn")
+Actor = NodePath("../../..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/Cross" unique_id=18633553]
+position = Vector2(5.5, -12.5)
+shape = SubResource("RectangleShape2D_0vigf")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+
+[node name="PowerCross" type="Area2D" parent="Body/HitBoxes" unique_id=1991690144 node_paths=PackedStringArray("Actor")]
+collision_layer = 4
+collision_mask = 24
+script = SubResource("GDScript_u32uk")
+Actor = NodePath("../../..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/PowerCross" unique_id=327625872]
+position = Vector2(7.5, -13)
+shape = SubResource("RectangleShape2D_6fb6j")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+
+[node name="Hook" type="Area2D" parent="Body/HitBoxes" unique_id=1646411215 node_paths=PackedStringArray("Actor")]
+collision_layer = 4
+collision_mask = 24
+script = SubResource("GDScript_ll5as")
+Actor = NodePath("../../..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/Hook" unique_id=811721205]
+position = Vector2(8.25, -13)
+shape = SubResource("RectangleShape2D_6fb6j")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+
+[node name="CrouchJab" type="Area2D" parent="Body/HitBoxes" unique_id=250688119 node_paths=PackedStringArray("Actor")]
+collision_layer = 4
+collision_mask = 24
+script = SubResource("GDScript_ixxin")
+Actor = NodePath("../../..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/CrouchJab" unique_id=858043391]
+position = Vector2(5.25, -8)
+shape = SubResource("RectangleShape2D_yml3j")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+
+[node name="AerialUp" type="Area2D" parent="Body/HitBoxes" unique_id=1359103086]
+position = Vector2(0, -2.08165e-12)
+collision_layer = 4
+collision_mask = 10
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/AerialUp" unique_id=590240720]
+position = Vector2(-0.5, -23.5)
+shape = SubResource("RectangleShape2D_nf6ms")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Body" unique_id=1480093987]
+texture_filter = 1
+position = Vector2(3, -12)
+sprite_frames = SubResource("SpriteFrames_xnr8x")
+animation = &"down_aerial"
+
+[node name="FloorRay" type="RayCast2D" parent="Body" unique_id=1467467166]
+position = Vector2(-2.08165e-12, -10)
+target_position = Vector2(0, 19)
+collide_with_areas = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2061445168]
+position = Vector2(0.25, -11)
+shape = SubResource("RectangleShape2D_e26c0")
+debug_color = Color(0, 0.6, 0.7, 0.42)
+
+[node name="StateMachine" parent="." unique_id=1704606569 instance=ExtResource("2_qm0nl")]
+
+[node name="Idle" type="Node" parent="StateMachine" unique_id=1517457493 node_paths=PackedStringArray("Actor")]
+script = SubResource("GDScript_holk3")
+Actor = NodePath("../..")
+
+[node name="Walk" type="Node" parent="StateMachine" unique_id=1848535859 node_paths=PackedStringArray("Actor")]
+script = SubResource("GDScript_cq87p")
+Actor = NodePath("../..")
+
+[node name="Crouch" type="Node" parent="StateMachine" unique_id=1436017827 node_paths=PackedStringArray("Actor")]
+script = SubResource("GDScript_xfc0g")
+Actor = NodePath("../..")
+
+[node name="Jump" type="Node" parent="StateMachine" unique_id=384654824 node_paths=PackedStringArray("Actor")]
+script = SubResource("GDScript_lk3wb")
+Actor = NodePath("../..")
+
+[node name="Fall" type="Node" parent="StateMachine" unique_id=1974372353 node_paths=PackedStringArray("Actor", "wallRaycastL", "wallRaycastR")]
+script = SubResource("GDScript_7h0ag")
+Actor = NodePath("../..")
+wallRaycastL = NodePath("../../WallDetection/RayCastLeft")
+wallRaycastR = NodePath("../../WallDetection/RayCastRight")
+
+[node name="CrouchJab" type="Node" parent="StateMachine" unique_id=1973163816 node_paths=PackedStringArray("Actor", "HitBox")]
+script = SubResource("GDScript_2330s")
+Actor = NodePath("../..")
+HitBox = NodePath("../../Body/HitBoxes/CrouchJab/CollisionShape2D")
+
+[node name="Jab" type="Node" parent="StateMachine" unique_id=309972133 node_paths=PackedStringArray("Actor", "HitBox")]
+script = SubResource("GDScript_hb3du")
+Actor = NodePath("../..")
+HitBox = NodePath("../../Body/HitBoxes/Jab/CollisionShape2D")
+
+[node name="Cross" type="Node" parent="StateMachine" unique_id=1218259109 node_paths=PackedStringArray("Actor", "HitBox")]
+script = SubResource("GDScript_vl204")
+Actor = NodePath("../..")
+HitBox = NodePath("../../Body/HitBoxes/Cross/CollisionShape2D")
+
+[node name="PowerCross" type="Node" parent="StateMachine" unique_id=396720247 node_paths=PackedStringArray("Actor", "HitBox")]
+script = SubResource("GDScript_cw3vx")
+Actor = NodePath("../..")
+HitBox = NodePath("../../Body/HitBoxes/PowerCross/CollisionShape2D")
+
+[node name="Hook" type="Node" parent="StateMachine" unique_id=1945705065 node_paths=PackedStringArray("Actor", "HitBox")]
+script = SubResource("GDScript_ug7xa")
+Actor = NodePath("../..")
+HitBox = NodePath("../../Body/HitBoxes/Hook/CollisionShape2D")
+
+[node name="DownAerial" type="Node" parent="StateMachine" unique_id=64785944 node_paths=PackedStringArray("Actor", "HitBox")]
+script = SubResource("GDScript_e0m6j")
+Actor = NodePath("../..")
+HitBox = NodePath("../../Body/HitBoxes/AerialDown/CollisionShape2D")
+
+[node name="UpAerial" type="Node" parent="StateMachine" unique_id=1612597250 node_paths=PackedStringArray("Actor", "HitBox")]
+script = SubResource("GDScript_fnkjj")
+Actor = NodePath("../..")
+HitBox = NodePath("../../Body/HitBoxes/AerialUp/CollisionShape2D")
+
+[node name="WallSlide" type="Node" parent="StateMachine" unique_id=231504725 node_paths=PackedStringArray("Actor")]
+script = SubResource("GDScript_uwhvp")
+Actor = NodePath("../..")
+
+[node name="WallJump" type="Node" parent="StateMachine" unique_id=1849343673 node_paths=PackedStringArray("Actor")]
+script = SubResource("GDScript_gcesf")
+Actor = NodePath("../..")
+
+[node name="Pogo" type="Node" parent="StateMachine" unique_id=55743994 node_paths=PackedStringArray("Actor")]
+script = SubResource("GDScript_tpd5w")
+Actor = NodePath("../..")
+
+[node name="CrossTimer" type="Timer" parent="." unique_id=650838513]
+one_shot = true
+
+[node name="OrientationTimer" type="Timer" parent="." unique_id=24299992]
+wait_time = 0.5
+one_shot = true
+
+[connection signal="area_entered" from="Body/HitBoxes/AerialDown" to="Body/HitBoxes/AerialDown" method="_on_area_entered"]
+[connection signal="area_entered" from="Body/HitBoxes/AerialDown" to="StateMachine/DownAerial" method="_on_aerial_down_area_entered"]
+[connection signal="body_entered" from="Body/HitBoxes/AerialDown" to="Body/HitBoxes/AerialDown" method="_on_body_entered"]
+[connection signal="body_entered" from="Body/HitBoxes/AerialDown" to="StateMachine/DownAerial" method="_on_aerial_down_body_entered"]
+[connection signal="area_entered" from="Body/HitBoxes/Jab" to="Body/HitBoxes/Jab" method="_on_area_entered"]
+[connection signal="body_entered" from="Body/HitBoxes/Jab" to="Body/HitBoxes/Jab" method="_on_body_entered"]
+[connection signal="area_entered" from="Body/HitBoxes/Cross" to="Body/HitBoxes/Cross" method="_on_area_entered"]
+[connection signal="body_entered" from="Body/HitBoxes/Cross" to="Body/HitBoxes/Cross" method="_on_body_entered"]
+[connection signal="area_entered" from="Body/HitBoxes/PowerCross" to="Body/HitBoxes/PowerCross" method="_on_area_entered"]
+[connection signal="body_entered" from="Body/HitBoxes/PowerCross" to="Body/HitBoxes/PowerCross" method="_on_body_entered"]
+[connection signal="area_entered" from="Body/HitBoxes/Hook" to="Body/HitBoxes/Hook" method="_on_area_entered"]
+[connection signal="body_entered" from="Body/HitBoxes/Hook" to="Body/HitBoxes/Hook" method="_on_body_entered"]
+[connection signal="area_entered" from="Body/HitBoxes/CrouchJab" to="Body/HitBoxes/CrouchJab" method="_on_area_entered"]
+[connection signal="body_entered" from="Body/HitBoxes/CrouchJab" to="Body/HitBoxes/CrouchJab" method="_on_body_entered"]
+[connection signal="animation_finished" from="Body/AnimatedSprite2D" to="StateMachine/PowerCross" method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="timeout" from="CrossTimer" to="." method="_on_cross_timer_timeout"]
+[connection signal="timeout" from="OrientationTimer" to="." method="_on_orientation_timer_timeout"]

@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3 uid="uid://cimre0qgmqswg"]
+
+[ext_resource type="Texture2D" uid="uid://cxcko0jalxtwl" path="res://mightybean.png" id="2_tp0uk"]
+
+[sub_resource type="GDScript" id="GDScript_bodwo"]
+script/source = "extends CharacterBody2D
+
+func interacted(force):
+	apply_central_impulse(force)
+"
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gmvs2"]
+radius = 5.0
+height = 24.0
+
+[node name="BeanCharacter" type="CharacterBody2D"]
+collision_layer = 16
+script = SubResource("GDScript_bodwo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_gmvs2")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-2.27374e-13, -3.57628e-07)
+scale = Vector2(0.0349345, 0.0349345)
+texture = ExtResource("2_tp0uk")

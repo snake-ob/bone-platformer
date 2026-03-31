@@ -1,0 +1,12 @@
+
+
+----
+Mar 29 2025
+FIRST STEPS
+
+- Create TileMap for basic level
+- Develop TileQueue system to highlight tiles around Player
+- Develop EnemyController to assign battle tiles to Enemies
+
+* Enemies should now successfully queue up around player
+--- 

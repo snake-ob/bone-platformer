@@ -1,0 +1,272 @@
+[gd_scene format=3 uid="uid://c8bvwftq0dn5c"]
+
+[ext_resource type="PackedScene" uid="uid://4m8ct6db1db1" path="res://Enemies/Enemy.tscn" id="1_4a2ic"]
+[ext_resource type="SpriteFrames" uid="uid://uqq8jxu7l2x0" path="res://Enemies/slime_spriteframes.tres" id="2_y5nn5"]
+
+[sub_resource type="GDScript" id="GDScript_rm6l0"]
+script/source = "extends Enemy
+
+const SPEED = 20.0
+const ACCELLERATION = 100.0
+const JUMP_HEIGHT = 130.0
+const JUMP_LENGTH = 50.0
+const GRAVITY = 275.0
+const FRICTION = 50.0
+const MAX_HEALTH = 10
+
+func _on_hurt_box_take_hit(force, damage):
+	StateMachine._set_state(\"recover\")
+	velocity += force
+
+func _ready():
+	# Run the parent's setup first
+	super()
+	
+	StateMachine._set_state(\"idle\")
+"
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_x6le0"]
+radius = 6.0
+height = 16.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vvue6"]
+radius = 56.0803
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_yd2g2"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_33ry5"]
+radius = 45.0
+height = 274.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qbmdl"]
+radius = 6.0
+
+[sub_resource type="GDScript" id="GDScript_fg8f5"]
+script/source = "extends State
+
+@export var playerDetection : Node
+
+func _enter_state():
+	print(\"--- Actor: %s ---\" % [actor])
+	change_animation.emit(\"idle\")
+	actor.velocity = Vector2.ZERO
+
+
+func _physics_update(delta):
+	apply_gravity(actor, delta)
+	if playerDetection.has_overlapping_bodies():
+		var bodies = playerDetection.get_overlapping_bodies()
+		if bodies[0] is Player && actor.ready_to_chase:
+			change_state.emit(\"chase\")
+	check_falling()
+	apply_friction(actor, delta)
+
+
+func check_falling():
+	if ! actor.is_on_floor():
+		change_state.emit('fall')
+"
+
+[sub_resource type="GDScript" id="GDScript_ab4al"]
+script/source = "extends State
+
+"
+
+[sub_resource type="GDScript" id="GDScript_8jn37"]
+script/source = "extends State
+
+@export var attackZone : Node
+
+func _enter_state():
+	change_animation.emit(\"walk\")
+
+func _physics_update(delta):
+	var direction = (player.global_position - actor.global_position).normalized()
+	actor.new_direction = direction.x
+	actor.velocity.x = move_toward(actor.velocity.x, direction.x * actor.SPEED, actor.ACCELLERATION * delta)
+	if attackZone.has_overlapping_bodies():
+		var bodies = attackZone.get_overlapping_bodies()
+		if bodies[0] is Player && actor.ready_to_attack:
+			change_state.emit(\"load\")
+	apply_gravity(actor, delta)
+	apply_friction(actor, delta)
+	check_falling()
+	
+
+func check_falling():
+	if ! actor.is_on_floor():
+		change_state.emit('fall')
+
+"
+
+[sub_resource type="GDScript" id="GDScript_1wkja"]
+script/source = "extends State
+
+func _enter_state():
+	change_animation.emit(\"load\")
+	actor.velocity = Vector2.ZERO
+	var load_timer = randf_range(0.2, 1.0)
+	await get_tree().create_timer(load_timer).timeout
+	change_state.emit(\"jump\")
+
+func _physics_update(delta):
+	apply_gravity(actor, delta)
+	apply_friction(actor, delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_rx3qd"]
+script/source = "extends State
+
+func _enter_state():
+	change_animation.emit(\"jump\")
+	actor.velocity.x += (actor.JUMP_LENGTH * actor.current_direction)
+	actor.velocity.y -= actor.JUMP_HEIGHT
+
+func _physics_update(delta):
+	if actor.velocity.y >= 0:
+		change_state.emit(\"fall\")
+	apply_gravity(actor, delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_r0pip"]
+script/source = "extends State
+
+func _enter_state():
+	change_animation.emit(\"fall\")
+	
+func _physics_update(delta):
+	if actor.is_on_floor():
+		change_state.emit(\"land\")
+	apply_gravity(actor, delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_hfxt2"]
+script/source = "extends State
+
+const FRICTION = 200
+
+func _enter_state():
+	change_animation.emit(\"recover\")
+
+func _physics_update(delta):
+	if actor.velocity.x == 0:
+		change_state.emit(\"idle\")
+	apply_friction(actor, delta)
+	apply_gravity(actor, delta)
+
+func apply_friction(actor, delta):
+	actor.velocity.x = move_toward(actor.velocity.x, 0, FRICTION * delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_6wghi"]
+script/source = "extends State
+
+const LAND_TIMER = 0.2
+
+func _enter_state():
+	change_animation.emit(\"land\")
+	actor.velocity = Vector2.ZERO
+	await get_tree().create_timer(LAND_TIMER).timeout
+	actor.ready_to_chase = false
+	actor.ready_to_attack = false
+	change_state.emit(\"idle\")
+	
+"
+
+[sub_resource type="GDScript" id="GDScript_0nphp"]
+script/source = "extends State
+
+func _enter_state():
+	actor.velocity = Vector2.ZERO
+	change_animation.emit(\"death\")
+	await get_tree().create_timer(1).timeout
+	actor.queue_free()
+	
+"
+
+[node name="Slime" unique_id=487005892 instance=ExtResource("1_4a2ic")]
+collision_layer = 64
+script = SubResource("GDScript_rm6l0")
+
+[node name="Timers" type="Node" parent="." index="0" unique_id=82553326]
+
+[node name="ChaseTimer" type="Timer" parent="Timers" index="0" unique_id=1996487583]
+
+[node name="AttackTimer" type="Timer" parent="Timers" index="1" unique_id=313551827]
+wait_time = 4.0
+one_shot = true
+
+[node name="CollisionShape2D" parent="." index="1" unique_id=1707792468]
+position = Vector2(-7.10543e-15, -6)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_x6le0")
+debug_color = Color(0.776471, 0.905882, 0.968627, 0.756863)
+
+[node name="AnimatedSprite2D" parent="Body" parent_id_path=PackedInt32Array(1363847246) index="0" unique_id=581613343]
+position = Vector2(0, -8)
+sprite_frames = ExtResource("2_y5nn5")
+animation = &"fall"
+
+[node name="AttackZone" type="Area2D" parent="." index="3" unique_id=599988702]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackZone" index="0" unique_id=897675623]
+position = Vector2(0, -9)
+shape = SubResource("CircleShape2D_vvue6")
+debug_color = Color(1, 0.282353, 0.392157, 0.235294)
+
+[node name="CollisionShape2D" parent="HurtBox" parent_id_path=PackedInt32Array(1438169615) index="0"]
+position = Vector2(0, -7)
+shape = SubResource("CircleShape2D_yd2g2")
+debug_color = Color(0.819608, 0.819608, 0, 0.435294)
+
+[node name="DetectionZone" parent="." index="5" unique_id=1656946126]
+position = Vector2(0, -10)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" parent="DetectionZone" index="0" unique_id=1904000838]
+position = Vector2(-4.37275e-28, -2.08165e-12)
+shape = SubResource("CapsuleShape2D_33ry5")
+
+[node name="CollisionShape2D" parent="SoftCollision" parent_id_path=PackedInt32Array(2003785463) index="0"]
+position = Vector2(0, -7)
+shape = SubResource("CircleShape2D_qbmdl")
+debug_color = Color(1, 1, 1, 0)
+
+[node name="Idle" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="0" unique_id=1423934512 node_paths=PackedStringArray("playerDetection")]
+script = SubResource("GDScript_fg8f5")
+playerDetection = NodePath("../../DetectionZone")
+
+[node name="Wander" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="1" unique_id=1359668813]
+script = SubResource("GDScript_ab4al")
+
+[node name="Chase" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="2" unique_id=356584374 node_paths=PackedStringArray("attackZone")]
+script = SubResource("GDScript_8jn37")
+attackZone = NodePath("../../AttackZone")
+
+[node name="Load" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="3" unique_id=1346438212]
+script = SubResource("GDScript_1wkja")
+
+[node name="Jump" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="4" unique_id=2133343627]
+script = SubResource("GDScript_rx3qd")
+
+[node name="Fall" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="5" unique_id=673380718]
+script = SubResource("GDScript_r0pip")
+
+[node name="Recover" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="6" unique_id=1798523605]
+script = SubResource("GDScript_hfxt2")
+
+[node name="Land" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="7" unique_id=718559864]
+script = SubResource("GDScript_6wghi")
+
+[node name="Death" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="8" unique_id=835309925]
+script = SubResource("GDScript_0nphp")
+
+[connection signal="timeout" from="Timers/ChaseTimer" to="." method="_on_chase_timer_timeout"]
+[connection signal="timeout" from="Timers/AttackTimer" to="." method="_on_attack_timer_timeout"]
+[connection signal="take_hit" from="HurtBox" to="." method="_on_hurt_box_take_hit"]
+
+[editable path="HurtBox"]
+[editable path="SoftCollision"]

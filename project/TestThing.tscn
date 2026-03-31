@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=3 uid="uid://ts0txcbi01h8"]
+
+[ext_resource type="Script" path="res://TestThing.gd" id="1_axfji"]
+[ext_resource type="Texture2D" uid="uid://cxcko0jalxtwl" path="res://mightybean.png" id="2_l50na"]
+[ext_resource type="PackedScene" uid="uid://dy6yer03442w2" path="res://Nodes/SoftCollision.tscn" id="3_cwv4n"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gmvs2"]
+radius = 5.0
+height = 24.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5dfdb"]
+
+[node name="RigidBody2D" type="RigidBody2D"]
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("1_axfji")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_gmvs2")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-2.27374e-13, -3.57628e-07)
+scale = Vector2(0.0349345, 0.0349345)
+texture = ExtResource("2_l50na")
+
+[node name="SoftCollision" parent="." instance=ExtResource("3_cwv4n")]
+
+[node name="CollisionShape2D" parent="SoftCollision" index="0"]
+position = Vector2(0, -1)
+shape = SubResource("CapsuleShape2D_5dfdb")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]
+
+[editable path="SoftCollision"]

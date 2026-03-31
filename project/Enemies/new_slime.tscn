@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://c4wyehxyemlri"]
+
+[ext_resource type="PackedScene" uid="uid://4m8ct6db1db1" path="res://Enemies/Enemy.tscn" id="1_2xn8f"]
+[ext_resource type="Script" uid="uid://b0li2wx126bwy" path="res://Enemies/NewSlime.gd" id="2_3rir7"]
+[ext_resource type="SpriteFrames" uid="uid://uqq8jxu7l2x0" path="res://Enemies/slime_spriteframes.tres" id="2_pptj7"]
+[ext_resource type="Script" uid="uid://dfunrl3sch004" path="res://Enemies/NewSlime/States/idle.gd" id="3_3rir7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pptj7"]
+size = Vector2(20, 9)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3rir7"]
+size = Vector2(21, 12)
+
+[node name="NewSlime" unique_id=475970655 instance=ExtResource("1_2xn8f")]
+script = ExtResource("2_3rir7")
+
+[node name="CollisionShape2D" parent="." index="0" unique_id=1707792468]
+position = Vector2(0, 3.5)
+shape = SubResource("RectangleShape2D_pptj7")
+
+[node name="AnimatedSprite2D" parent="Body" parent_id_path=PackedInt32Array(1363847246) index="0" unique_id=581613343]
+sprite_frames = ExtResource("2_pptj7")
+animation = &"idle"
+frame_progress = 0.23994151
+
+[node name="CollisionShape2D" parent="HurtBox" parent_id_path=PackedInt32Array(1438169615) index="0"]
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_3rir7")
+debug_color = Color(1, 0, 0.33333334, 0.54509807)
+
+[node name="Idle" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="0" unique_id=818930391]
+script = ExtResource("3_3rir7")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
+[node name="Timers" type="Node" parent="." index="6" unique_id=1422118767]
+
+[node name="AttackTimer" type="Timer" parent="Timers" index="0" unique_id=408989233]
+
+[node name="ChaseTimer" type="Timer" parent="Timers" index="1" unique_id=1536812562]
+
+[editable path="HurtBox"]

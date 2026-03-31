@@ -1,0 +1,52 @@
+[gd_scene load_steps=6 format=3 uid="uid://bfxiruc814d3w"]
+
+[ext_resource type="Texture2D" uid="uid://c28elkxdiu4en" path="res://Assets/wall.png" id="1_jm2ov"]
+[ext_resource type="PackedScene" uid="uid://dy6yer03442w2" path="res://Nodes/SoftCollision.tscn" id="2_3crr5"]
+
+[sub_resource type="GDScript" id="GDScript_ayigu"]
+script/source = "extends StaticBody2D
+
+#const PUSH_FORCE = 100
+#var objects = []
+#
+#func _on_bounce_area_body_entered(body):
+	#if not body is RigidBody2D: return
+	#objects.append(body)
+	#var direction = (body.global_position - self.global_position).normalized()
+	#var force = direction * PUSH_FORCE
+	#await get_tree().create_timer(2).timeout
+	#if body in objects:
+		#body.apply_constant_force(force)
+	#
+#
+#func _on_bounce_area_body_exited(body):
+	#if not body is RigidBody2D: return
+	#if body in objects:
+		#body.stop_constant_force()
+		#objects.erase(body)
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_frnce"]
+size = Vector2(20, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4txuv"]
+size = Vector2(32, 100)
+
+[node name="Wall" type="StaticBody2D"]
+script = SubResource("GDScript_ayigu")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_frnce")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+rotation = 1.5708
+texture = ExtResource("1_jm2ov")
+
+[node name="SoftCollision" parent="." instance=ExtResource("2_3crr5")]
+collision_mask = 16
+
+[node name="CollisionShape2D" parent="SoftCollision" index="0"]
+shape = SubResource("RectangleShape2D_4txuv")
+
+[editable path="SoftCollision"]

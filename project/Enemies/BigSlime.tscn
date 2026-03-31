@@ -1,0 +1,391 @@
+[gd_scene load_steps=33 format=3 uid="uid://c6yl5wuouau1a"]
+
+[ext_resource type="PackedScene" uid="uid://4m8ct6db1db1" path="res://Enemies/Enemy.tscn" id="1_akj37"]
+[ext_resource type="Texture2D" uid="uid://bjsskxu62o47i" path="res://Assets/Sprite Sheets/biga-slime-spritesheett.png" id="2_gvyy8"]
+
+[sub_resource type="GDScript" id="GDScript_rm6l0"]
+script/source = "extends Enemy
+
+const SPEED = 20.0
+const ACCELLERATION = 100.0
+const JUMP_HEIGHT = 130.0
+const JUMP_LENGTH = 50.0
+const GRAVITY = 275.0
+const FRICTION = 50.0
+
+func _on_hurt_box_take_hit(force, damage):
+	StateMachine._set_state(\"recover\")
+	velocity += force
+"
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_x6le0"]
+radius = 11.0
+height = 34.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_75woj"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(400, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x2wvj"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(440, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hcoyw"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(160, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_41gaa"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(200, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dt2gy"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(240, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tu5pm"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(280, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g4yey"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(360, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o0i70"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(480, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bb83q"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(320, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6185m"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(520, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h7wmv"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(560, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qpt8x"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(0, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_teq3a"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(40, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_unj2l"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(80, 0, 40, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kojwc"]
+atlas = ExtResource("2_gvyy8")
+region = Rect2(120, 0, 40, 40)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5noc4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_75woj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x2wvj")
+}],
+"loop": false,
+"name": &"fall",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hcoyw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_41gaa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dt2gy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tu5pm")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g4yey")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o0i70")
+}],
+"loop": true,
+"name": &"land",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bb83q")
+}],
+"loop": true,
+"name": &"load",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6185m")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h7wmv")
+}],
+"loop": true,
+"name": &"recover",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qpt8x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_teq3a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_unj2l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kojwc")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vvue6"]
+radius = 56.0803
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_yd2g2"]
+radius = 18.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_33ry5"]
+radius = 45.0
+height = 274.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qbmdl"]
+
+[sub_resource type="GDScript" id="GDScript_fg8f5"]
+script/source = "extends State
+
+@export var playerDetection : Node
+
+func _enter_state():
+	change_animation.emit(\"idle\")
+	actor.velocity = Vector2.ZERO
+	
+
+func _physics_update(delta):
+	apply_gravity(actor, delta)
+	apply_friction(actor, delta)
+	if playerDetection.has_overlapping_bodies():
+		var bodies = playerDetection.get_overlapping_bodies()
+		if bodies[0] is Player && actor.ready_to_chase:
+			change_state.emit(\"chase\")
+	
+"
+
+[sub_resource type="GDScript" id="GDScript_ab4al"]
+script/source = "extends State
+
+"
+
+[sub_resource type="GDScript" id="GDScript_8jn37"]
+script/source = "extends State
+
+@export var attackZone : Node
+
+func _enter_state():
+	change_animation.emit(\"walk\")
+
+func _physics_update(delta):
+	var direction = (player.global_position - actor.global_position).normalized()
+	actor.new_direction = direction.x
+	actor.velocity.x = move_toward(actor.velocity.x, direction.x * actor.SPEED, actor.ACCELLERATION * delta)
+	if attackZone.has_overlapping_bodies():
+		var bodies = attackZone.get_overlapping_bodies()
+		if bodies[0] is Player && actor.ready_to_attack:
+			change_state.emit(\"load\")
+	apply_gravity(actor, delta)
+	apply_friction(actor, delta)
+
+"
+
+[sub_resource type="GDScript" id="GDScript_1wkja"]
+script/source = "extends State
+
+func _enter_state():
+	change_animation.emit(\"load\")
+	actor.velocity = Vector2.ZERO
+	var load_timer = randf_range(0.2, 1.0)
+	await get_tree().create_timer(load_timer).timeout
+	change_state.emit(\"jump\")
+
+func _physics_update(delta):
+	apply_gravity(actor, delta)
+	apply_friction(actor, delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_rx3qd"]
+script/source = "extends State
+
+func _enter_state():
+	change_animation.emit(\"jump\")
+	actor.velocity.x += (actor.JUMP_LENGTH * actor.current_direction)
+	actor.velocity.y -= actor.JUMP_HEIGHT
+
+func _physics_update(delta):
+	if actor.velocity.y >= 0:
+		change_state.emit(\"fall\")
+	apply_gravity(actor, delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_r0pip"]
+script/source = "extends State
+
+func _enter_state():
+	change_animation.emit(\"fall\")
+	
+func _physics_update(delta):
+	if actor.is_on_floor():
+		change_state.emit(\"land\")
+	apply_gravity(actor, delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_hfxt2"]
+script/source = "extends State
+
+func _enter_state():
+	change_animation.emit(\"recover\")
+
+func _physics_update(delta):
+	if actor.velocity.x == 0:
+		change_state.emit(\"idle\")
+	apply_friction(actor, delta)
+	apply_gravity(actor, delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_6wghi"]
+script/source = "extends State
+
+const LAND_TIMER = 0.2
+
+func _enter_state():
+	change_animation.emit(\"land\")
+	actor.velocity = Vector2.ZERO
+	await get_tree().create_timer(LAND_TIMER).timeout
+	actor.ready_to_chase = false
+	actor.ready_to_attack = false
+	change_state.emit(\"idle\")
+	
+func _physics_update(delta):
+	apply_gravity(actor, delta)
+	apply_friction(actor, delta)
+"
+
+[node name="BigSlime" instance=ExtResource("1_akj37")]
+collision_layer = 64
+script = SubResource("GDScript_rm6l0")
+
+[node name="Timers" type="Node" parent="." index="0"]
+
+[node name="ChaseTimer" type="Timer" parent="Timers" index="0"]
+
+[node name="AttackTimer" type="Timer" parent="Timers" index="1"]
+wait_time = 4.0
+one_shot = true
+
+[node name="CollisionShape2D" parent="." index="1"]
+position = Vector2(-1, -11)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_x6le0")
+debug_color = Color(0.776471, 0.905882, 0.968627, 0.756863)
+
+[node name="Body" parent="." index="2"]
+position = Vector2(7.10543e-15, -8)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Body" index="0"]
+texture_filter = 1
+position = Vector2(0, -8)
+sprite_frames = SubResource("SpriteFrames_5noc4")
+animation = &"recover"
+
+[node name="AttackZone" type="Area2D" parent="." index="3"]
+position = Vector2(7.10543e-15, -8)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackZone" index="0"]
+position = Vector2(0, -9)
+shape = SubResource("CircleShape2D_vvue6")
+debug_color = Color(1, 0.282353, 0.392157, 0.235294)
+
+[node name="HurtBox" parent="." index="4"]
+position = Vector2(7.10543e-15, -8)
+
+[node name="CollisionShape2D" parent="HurtBox" index="0"]
+position = Vector2(-7.10543e-15, -4)
+shape = SubResource("CircleShape2D_yd2g2")
+debug_color = Color(0.819608, 0.819608, 0, 0.435294)
+
+[node name="DetectionZone" parent="." index="5"]
+position = Vector2(7.10543e-15, -18)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" parent="DetectionZone" index="0"]
+position = Vector2(-4.37275e-28, -2.08165e-12)
+shape = SubResource("CapsuleShape2D_33ry5")
+
+[node name="SoftCollision" parent="." index="6"]
+position = Vector2(7.10543e-15, -8)
+
+[node name="CollisionShape2D" parent="SoftCollision" index="0"]
+position = Vector2(-7.10543e-15, -3)
+shape = SubResource("CircleShape2D_qbmdl")
+debug_color = Color(1, 1, 1, 0)
+
+[node name="Idle" type="Node" parent="StateMachine" index="0" node_paths=PackedStringArray("playerDetection")]
+script = SubResource("GDScript_fg8f5")
+playerDetection = NodePath("../../DetectionZone")
+
+[node name="Wander" type="Node" parent="StateMachine" index="1"]
+script = SubResource("GDScript_ab4al")
+
+[node name="Chase" type="Node" parent="StateMachine" index="2" node_paths=PackedStringArray("attackZone")]
+script = SubResource("GDScript_8jn37")
+attackZone = NodePath("../../AttackZone")
+
+[node name="Load" type="Node" parent="StateMachine" index="3"]
+script = SubResource("GDScript_1wkja")
+
+[node name="Jump" type="Node" parent="StateMachine" index="4"]
+script = SubResource("GDScript_rx3qd")
+
+[node name="Fall" type="Node" parent="StateMachine" index="5"]
+script = SubResource("GDScript_r0pip")
+
+[node name="Recover" type="Node" parent="StateMachine" index="6"]
+script = SubResource("GDScript_hfxt2")
+
+[node name="Land" type="Node" parent="StateMachine" index="7"]
+script = SubResource("GDScript_6wghi")
+
+[connection signal="timeout" from="Timers/ChaseTimer" to="." method="_on_chase_timer_timeout"]
+[connection signal="timeout" from="Timers/AttackTimer" to="." method="_on_attack_timer_timeout"]
+[connection signal="take_hit" from="HurtBox" to="." method="_on_hurt_box_take_hit"]
+
+[editable path="HurtBox"]
+[editable path="SoftCollision"]

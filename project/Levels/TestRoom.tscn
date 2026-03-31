@@ -1,0 +1,86 @@
+[gd_scene format=3 uid="uid://cnp8f2smrfob4"]
+
+[ext_resource type="Texture2D" uid="uid://ccv28geplcwb5" path="res://Assets/metal.jpg" id="1_oryc1"]
+[ext_resource type="PackedScene" uid="uid://b3265k8ebm0vp" path="res://Player/Player.tscn" id="2_qr2r5"]
+[ext_resource type="PackedScene" uid="uid://c6yl5wuouau1a" path="res://Enemies/BigSlime.tscn" id="3_cbfsi"]
+[ext_resource type="PackedScene" uid="uid://ts0txcbi01h8" path="res://TestThing.tscn" id="3_llll8"]
+[ext_resource type="PackedScene" uid="uid://c8bvwftq0dn5c" path="res://Enemies/Slime.tscn" id="3_npbon"]
+[ext_resource type="PackedScene" uid="uid://b7r7ulxxqgqtb" path="res://Nodes/Floor.tscn" id="4_6jaq2"]
+[ext_resource type="PackedScene" uid="uid://bfxiruc814d3w" path="res://Nodes/Wall.tscn" id="5_b8jg2"]
+
+[sub_resource type="GDScript" id="GDScript_obrsi"]
+script/source = "extends Node2D
+
+@onready var enemies = $Enemies
+@onready var player = $Player
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	for enemy in enemies.get_children():
+		enemy.connect_player(player)
+		enemy.set_initial_state(\"idle\")
+"
+
+[node name="TestRoom" type="Node2D" unique_id=21802306]
+script = SubResource("GDScript_obrsi")
+
+[node name="TestRoom1" type="Sprite2D" parent="." unique_id=1244705230]
+position = Vector2(160.5, 92.6387)
+scale = Vector2(0.321, 0.277361)
+texture = ExtResource("1_oryc1")
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1288437157]
+position = Vector2(2.08165e-12, 2.08165e-12)
+
+[node name="Slime" parent="Enemies" unique_id=798895825 instance=ExtResource("3_npbon")]
+position = Vector2(168, 48)
+
+[node name="Slime2" parent="Enemies" unique_id=1231075345 instance=ExtResource("3_npbon")]
+position = Vector2(56, 88)
+
+[node name="BigSlime" parent="Enemies" unique_id=171297530 instance=ExtResource("3_cbfsi")]
+position = Vector2(248, 0)
+
+[node name="Player" parent="." unique_id=973792661 instance=ExtResource("2_qr2r5")]
+position = Vector2(80, 56)
+JUMP_FORCE = 100.0
+
+[node name="RigidBody2D" parent="." unique_id=669742880 instance=ExtResource("3_llll8")]
+position = Vector2(264, 104)
+collision_mask = 1
+
+[node name="RigidBody2D4" parent="." unique_id=1454821842 instance=ExtResource("3_llll8")]
+position = Vector2(232, 104)
+collision_mask = 1
+
+[node name="Floor" parent="." unique_id=250034980 instance=ExtResource("4_6jaq2")]
+position = Vector2(48, 136)
+
+[node name="Floor2" parent="." unique_id=1153627103 instance=ExtResource("4_6jaq2")]
+position = Vector2(148, 136)
+
+[node name="Floor3" parent="." unique_id=1514285453 instance=ExtResource("4_6jaq2")]
+position = Vector2(256, 64)
+
+[node name="Floor4" parent="." unique_id=1508795971 instance=ExtResource("4_6jaq2")]
+position = Vector2(248, 136)
+
+[node name="Wall" parent="." unique_id=1569301439 instance=ExtResource("5_b8jg2")]
+position = Vector2(200, 88)
+scale = Vector2(-1, -1)
+
+[node name="Wall4" parent="." unique_id=23404851 instance=ExtResource("5_b8jg2")]
+position = Vector2(296, 8)
+scale = Vector2(-1, -1)
+
+[node name="Wall2" parent="." unique_id=1879949330 instance=ExtResource("5_b8jg2")]
+position = Vector2(8, 80)
+
+[node name="Wall3" parent="." unique_id=1711355250 instance=ExtResource("5_b8jg2")]
+position = Vector2(136, 48)
+
+[editable path="Player"]
+[editable path="RigidBody2D"]
+[editable path="RigidBody2D/SoftCollision"]
+[editable path="RigidBody2D4"]
+[editable path="RigidBody2D4/SoftCollision"]

@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://4m8ct6db1db1"]
+
+[ext_resource type="PackedScene" uid="uid://dy6yer03442w2" path="res://Nodes/SoftCollision.tscn" id="1_mgnir"]
+[ext_resource type="PackedScene" uid="uid://wfi7eruymwq0" path="res://Nodes/HurtBox.tscn" id="1_x314a"]
+[ext_resource type="Script" uid="uid://dt6fl1kxepj3e" path="res://State Machines/state-machine.gd" id="2_b1lbu"]
+
+[node name="Enemy" type="CharacterBody2D" unique_id=736844394]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1707792468]
+position = Vector2(2.08165e-12, 2.08165e-12)
+
+[node name="Body" type="Node2D" parent="." unique_id=1363847246]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Body" unique_id=581613343]
+
+[node name="HurtBox" parent="." unique_id=1438169615 instance=ExtResource("1_x314a")]
+
+[node name="DetectionZone" type="Area2D" parent="." unique_id=1656946126]
+position = Vector2(2.08165e-12, 2.08165e-12)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionZone" unique_id=1904000838]
+position = Vector2(-2.08165e-12, -2.08165e-12)
+rotation = 1.5708
+debug_color = Color(0.223529, 1, 1, 0.0588235)
+
+[node name="SoftCollision" parent="." unique_id=2003785463 instance=ExtResource("1_mgnir")]
+
+[node name="StateMachine" type="Node" parent="." unique_id=1134773874]
+script = ExtResource("2_b1lbu")
+
+[editable path="HurtBox"]
