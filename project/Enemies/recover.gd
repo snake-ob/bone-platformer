@@ -1,22 +1,22 @@
 extends State
 
 @export var playerDetection : Node
-var idle_timer : Timer
+var direction
+var stun_timer : Timer
 
 func _ready():
-	idle_timer = Timer.new()
-	add_child(idle_timer)
-	idle_timer.one_shot = true
-	idle_timer.timeout.connect(_idle_timeout)
+	stun_timer = Timer.new()
+	add_child(stun_timer)
+	stun_timer.one_shot = true
+	stun_timer.timeout.connect(_stun_timeout)
 
 func _enter_state():
-	change_animation.emit("idle")
+	change_animation.emit("recover")
 	actor.velocity = Vector2.ZERO
-	var time_to_idle = randi_range(3,7)
-	idle_timer.start(time_to_idle)
-	
+	stun_timer.start(1.0)
+
 func _exit_state():
-	idle_timer.stop()
+	stun_timer.stop()
 
 func _physics_update(delta):
 	apply_gravity(actor, delta)
@@ -28,5 +28,5 @@ func check_falling():
 	if ! actor.is_on_floor():
 		change_state.emit('fall')
 
-func _idle_timeout():
-	change_state.emit('wander')
+func _stun_timeout():
+	change_state.emit('idle')

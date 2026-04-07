@@ -10,3 +10,10 @@ FIRST STEPS
 
 * Enemies should now successfully queue up around player
 --- 
+Apr 3
+
+SLIME
+- Slime should seek the closest empty 2 tile
+- If 2 is not available, go to 3
+- 1,2,3 stuns the slime, x eyes
+- big 1,2 when stunned will splat the slime

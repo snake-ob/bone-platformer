@@ -28,3 +28,9 @@ tile_set = ExtResource("3_ujdt3")
 
 [node name="NewSlime" parent="." unique_id=475970655 instance=ExtResource("5_tnerh")]
 position = Vector2(216, -32)
+
+[node name="NewSlime2" parent="." unique_id=1974684466 instance=ExtResource("5_tnerh")]
+position = Vector2(40, 0)
+
+[node name="NewSlime3" parent="." unique_id=432235246 instance=ExtResource("5_tnerh")]
+position = Vector2(304, 0)

@@ -15,7 +15,6 @@ func _ready():
 			states[state.name.to_lower()] = state
 			state.change_animation.connect(_on_change_animation)
 			state.change_state.connect(_on_change_state)
-			
 
 func _process(delta):
 	if current_state:

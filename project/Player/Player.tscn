@@ -34,7 +34,7 @@ size = Vector2(7, 15)
 script/source = "extends Area2D
 
 @export var Actor : Node
-const POWER = 50
+const POWER = 20
 const DAMAGE = 3
 
 func _on_body_entered(body):
@@ -59,7 +59,7 @@ size = Vector2(14, 8)
 script/source = "extends Area2D
 
 @export var Actor : Node
-const POWER = 100
+const POWER = 30
 const DAMAGE = 3
 
 func _on_body_entered(body):
@@ -84,31 +84,6 @@ size = Vector2(17, 7)
 script/source = "extends Area2D
 
 @export var Actor : Node
-const POWER = 120
-const DAMAGE = 3
-
-func _on_body_entered(body):
-	var direction = (body.global_position - Actor.global_position).normalized()
-	var force = direction * POWER
-	if body is RigidBody2D:
-		body.interacted(force)
-	elif body is Enemy:
-		body.apply_knockback()
-
-func _on_area_entered(area):
-	var direction = (area.global_position - Actor.global_position).normalized()
-	var force = direction * POWER
-	if area is HurtBox:
-		area.taken_hit(force, DAMAGE)
-"
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_6fb6j"]
-size = Vector2(15.5, 10)
-
-[sub_resource type="GDScript" id="GDScript_ll5as"]
-script/source = "extends Area2D
-
-@export var Actor : Node
 const POWER = 100
 const DAMAGE = 3
 
@@ -124,14 +99,39 @@ func _on_area_entered(area):
 	var direction = (area.global_position - Actor.global_position).normalized()
 	var force = direction * POWER
 	if area is HurtBox:
-		area.taken_hit(force, DAMAGE)
+		area.taken_slam(force, DAMAGE)
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6fb6j"]
+size = Vector2(15.5, 10)
+
+[sub_resource type="GDScript" id="GDScript_ll5as"]
+script/source = "extends Area2D
+
+@export var Actor : Node
+const POWER = 5
+const DAMAGE = 3
+
+func _on_body_entered(body):
+	var direction = (body.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if body is RigidBody2D:
+		body.interacted(force)
+	elif body is Enemy:
+		body.apply_knockback()
+
+func _on_area_entered(area):
+	var direction = (area.global_position - Actor.global_position).normalized()
+	var force = direction * 2
+	if area is HurtBox:
+		area.taken_stun(force, DAMAGE)
 "
 
 [sub_resource type="GDScript" id="GDScript_ixxin"]
 script/source = "extends Area2D
 
 @export var Actor : Node
-const POWER = 75
+const POWER = 20
 const DAMAGE = 3
 
 func _on_body_entered(body):

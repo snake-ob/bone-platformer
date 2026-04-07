@@ -32,12 +32,10 @@ var current_state : String
 func _ready():
 	ready_to_chase = true
 	ready_to_attack = true
-	print("FLAG")
 	if StateMachine:
 		StateMachine.change_animation.connect(_on_change_animation)
 		StateMachine.state_changed.connect(_on_state_changed)
 		for state in StateMachine.get_children():
-			print("--- State (in Enemy.gd): %s ---"% [state])
 			state.set_actor(self)
 	
 func _physics_process(delta):

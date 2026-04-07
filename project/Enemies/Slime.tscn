@@ -69,7 +69,6 @@ func check_falling():
 
 [sub_resource type="GDScript" id="GDScript_ab4al"]
 script/source = "extends State
-
 "
 
 [sub_resource type="GDScript" id="GDScript_8jn37"]
@@ -96,7 +95,6 @@ func _physics_update(delta):
 func check_falling():
 	if ! actor.is_on_floor():
 		change_state.emit('fall')
-
 "
 
 [sub_resource type="GDScript" id="GDScript_1wkja"]

@@ -4,6 +4,10 @@
 [ext_resource type="Script" uid="uid://b0li2wx126bwy" path="res://Enemies/NewSlime.gd" id="2_3rir7"]
 [ext_resource type="SpriteFrames" uid="uid://uqq8jxu7l2x0" path="res://Enemies/slime_spriteframes.tres" id="2_pptj7"]
 [ext_resource type="Script" uid="uid://dfunrl3sch004" path="res://Enemies/NewSlime/States/idle.gd" id="3_3rir7"]
+[ext_resource type="Script" uid="uid://byq0nc5vmqal" path="res://Enemies/wander.gd" id="5_kljh7"]
+[ext_resource type="Script" uid="uid://crehrm2df7oye" path="res://Enemies/stunned.gd" id="6_jsw0e"]
+[ext_resource type="Script" uid="uid://tl6iy2fdy1hq" path="res://Enemies/recover.gd" id="7_gdq1n"]
+[ext_resource type="Script" uid="uid://ddpsdxn4q67fp" path="res://Enemies/death.gd" id="8_qhwpm"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pptj7"]
 size = Vector2(20, 9)
@@ -20,8 +24,9 @@ shape = SubResource("RectangleShape2D_pptj7")
 
 [node name="AnimatedSprite2D" parent="Body" parent_id_path=PackedInt32Array(1363847246) index="0" unique_id=581613343]
 sprite_frames = ExtResource("2_pptj7")
-animation = &"idle"
-frame_progress = 0.23994151
+animation = &"death"
+frame = 3
+frame_progress = 1.0
 
 [node name="CollisionShape2D" parent="HurtBox" parent_id_path=PackedInt32Array(1438169615) index="0"]
 position = Vector2(-0.5, 0)
@@ -32,10 +37,26 @@ debug_color = Color(1, 0, 0.33333334, 0.54509807)
 script = ExtResource("3_3rir7")
 metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
 
+[node name="Wander" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="1" unique_id=907740551]
+script = ExtResource("5_kljh7")
+
+[node name="Stun" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="2" unique_id=101320961]
+script = ExtResource("6_jsw0e")
+
+[node name="Recover" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="3" unique_id=1922533171]
+script = ExtResource("7_gdq1n")
+
+[node name="Death" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="4" unique_id=1180300085]
+script = ExtResource("8_qhwpm")
+
 [node name="Timers" type="Node" parent="." index="6" unique_id=1422118767]
 
 [node name="AttackTimer" type="Timer" parent="Timers" index="0" unique_id=408989233]
 
 [node name="ChaseTimer" type="Timer" parent="Timers" index="1" unique_id=1536812562]
+
+[connection signal="take_hit" from="HurtBox" to="." method="_on_hurt_box_take_hit"]
+[connection signal="take_slam" from="HurtBox" to="." method="_on_hurt_box_take_slam"]
+[connection signal="take_stun" from="HurtBox" to="." method="_on_hurt_box_take_stun"]
 
 [editable path="HurtBox"]
