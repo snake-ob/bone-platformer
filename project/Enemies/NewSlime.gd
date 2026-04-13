@@ -7,7 +7,12 @@ const JUMP_LENGTH = 50.0
 const GRAVITY = 275.0
 const FRICTION = 50.0
 const MAX_HEALTH = 10
+const PREF_SLOT = 2
 var health : int
+
+var target_position : Vector2
+
+signal get_target_position(requester)
 
 func _on_hurt_box_take_hit(force, damage):
 	velocity += force
@@ -17,7 +22,7 @@ func _ready():
 	super()
 	StateMachine._set_state("idle")
 	health = MAX_HEALTH
-
+	
 func _on_hurt_box_take_stun(force: Variant, damage: Variant) -> void:
 	StateMachine._set_state("stun")
 
@@ -25,3 +30,6 @@ func _on_hurt_box_take_slam(force:Variant, damage: Variant) -> void:
 	velocity += force * 2
 	if $StateMachine.current_state.name == "Stun":
 		StateMachine._set_state("death")
+		
+func _set_target_position():
+	pass

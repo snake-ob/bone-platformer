@@ -6,10 +6,111 @@
 [ext_resource type="TileSet" uid="uid://cmfvulk7q7jpx" path="res://TestTileSet.tres" id="3_ujdt3"]
 [ext_resource type="PackedScene" uid="uid://c4wyehxyemlri" path="res://Enemies/new_slime.tscn" id="5_tnerh"]
 
+[sub_resource type="GDScript" id="GDScript_xnb64"]
+resource_name = "Level"
+script/source = "extends Node2D
+
+var current_player_tile
+
+func _ready() -> void:
+	$Player.new_tile_entered.connect(_on_player_new_tile)
+	$QueueManager.slots_updated.connect(_on_slots_updated)
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+
+func _on_player_new_tile(new_tile, tilemap):
+	$QueueManager.refresh_tiles(new_tile, tilemap)
+	
+func _on_slots_updated(slots):
+	$EnemyManager._catch_slots(slots)
+	
+"
+
+[sub_resource type="GDScript" id="GDScript_e6i1n"]
+script/source = "extends Node2D
+#This is a Node2D so that we can debug slot positions
+
+class Slot:
+	var active: bool = false
+	var held_by: Enemy = null
+	var reserved_by: Enemy = null
+	var centre: Vector2
+	var pos_index: int = 0
+	
+	func is_available():
+		return held_by == null and reserved_by == null
+		
+	func _to_string():
+		return \"Slot(index:%d, x:%d, y:%d)\" % [pos_index, centre.x, centre.y]
+		
+var slots: Array
+
+signal slots_updated(slots)
+
+func _draw():
+	for slot in slots:
+		var draw_pos = Vector2(slot.centre) - global_position
+		draw_circle(draw_pos, 5.0, Color.INDIAN_RED)
+
+func _ready():
+	for i in range(-3,4):
+		if i == 0: continue
+		var new_slot = Slot.new()
+		new_slot.pos_index = i
+		slots.append(new_slot)
+	print(slots)
+
+func refresh_tiles(new_tile :Vector2i, tile_map: TileMapLayer):
+	var centre_tile_pos = tile_map.to_global(tile_map.map_to_local(new_tile))
+	var tile_width = tile_map.tile_set.tile_size.x
+	
+	for slot in slots:
+		var offset_x = slot.pos_index * tile_width
+		slot.centre.x = centre_tile_pos.x + offset_x
+		slot.centre.y = centre_tile_pos.y
+		
+	queue_redraw()
+	slots_updated.emit(slots)
+"
+
+[sub_resource type="GDScript" id="GDScript_tnerh"]
+script/source = "extends Node
+
+var slots: Array
+
+# Keeps track of all enemy positions close to player
+# Gives each enemy a slot target on queue refresh
+# Loops through enemy, from closest to farthest, and assigns them
+# a slot target (depending on slot availability)
+
+# Assigns enemies to their 'active' spot.
+# If they don't have one, they are added to a waiting list to wait
+# behind the active spot. If no enemy has that active spot reserved
+# after assigning. They will be assigned to their waiting spot
+# (this will form a line where they wait for the next enemy to
+# get out of the way)
+
+func _catch_slots(new_slots: Array):
+	# QueueManager will pass new slots every update
+	if new_slots:
+		slots = new_slots
+"
+
 [node name="LevelTest_Mar25" type="Node2D" unique_id=1451453980]
+script = SubResource("GDScript_xnb64")
 
 [node name="Player" parent="." unique_id=1304642200 instance=ExtResource("1_fepeq")]
 position = Vector2(88, -40)
+
+[node name="QueueManager" type="Node2D" parent="." unique_id=1050496794]
+z_index = 1
+position = Vector2(88, -40)
+script = SubResource("GDScript_e6i1n")
+
+[node name="EnemyManager" type="Node" parent="." unique_id=746036016]
+script = SubResource("GDScript_tnerh")
 
 [node name="Tilemap" type="Node2D" parent="." unique_id=964033396]
 script = ExtResource("2_ujdt3")
@@ -26,11 +127,13 @@ highlight_tile_id = Vector2i(1, 8)
 tile_map_data = PackedByteArray("AAAZAAsAAAAHAAUAAAAZAAoAAAAHAAQAAAAZAAkAAAAHAAQAAAAZAAgAAAAHAAQAAAAZAAcAAAAHAAQAAAAZAAYAAAAHAAQAAAAZAAUAAAAHAAQAAAAZAAQAAAAHAAMAAAAYAAsAAAABAAUAAAAYAAoAAAABAAQAAAAYAAkAAAABAAQAAAAYAAgAAAABAAQAAAAYAAcAAAABAAQAAAAYAAYAAAABAAQAAAAYAAUAAAABAAQAAAAYAAQAAAABAAQAAAAXAAsAAAADAAUAAAAXAAoAAAABAAQAAAAXAAkAAAABAAQAAAAXAAgAAAABAAQAAAAXAAcAAAABAAQAAAAXAAYAAAABAAQAAAAXAAUAAAABAAQAAAAXAAQAAAABAAQAAAAWAAsAAAABAAUAAAAWAAoAAAABAAQAAAAWAAkAAAABAAQAAAAWAAgAAAABAAQAAAAWAAcAAAABAAQAAAAWAAYAAAABAAQAAAAWAAUAAAABAAQAAAAWAAQAAAABAAQAAAAVAAsAAAACAAUAAAAVAAoAAAABAAQAAAAVAAkAAAABAAQAAAAVAAgAAAABAAQAAAAVAAcAAAABAAQAAAAVAAYAAAABAAQAAAAVAAUAAAABAAQAAAAVAAQAAAABAAQAAAAUAAsAAAADAAUAAAAUAAoAAAABAAQAAAAUAAkAAAABAAQAAAAUAAgAAAABAAQAAAAUAAcAAAABAAQAAAAUAAYAAAABAAQAAAAUAAUAAAABAAQAAAAUAAQAAAABAAQAAAATAAsAAAABAAUAAAATAAoAAAABAAQAAAATAAkAAAABAAQAAAATAAgAAAABAAQAAAATAAcAAAABAAQAAAATAAYAAAABAAQAAAATAAUAAAABAAQAAAATAAQAAAABAAQAAAASAAsAAAADAAUAAAASAAoAAAABAAQAAAASAAkAAAABAAQAAAASAAgAAAABAAQAAAASAAcAAAABAAQAAAASAAYAAAABAAQAAAASAAUAAAABAAQAAAASAAQAAAABAAQAAAARAAsAAAACAAUAAAARAAoAAAABAAQAAAARAAkAAAABAAQAAAARAAgAAAABAAQAAAARAAcAAAABAAQAAAARAAYAAAABAAQAAAARAAUAAAABAAQAAAARAAQAAAABAAQAAAAQAAsAAAADAAUAAAAQAAoAAAABAAQAAAAQAAkAAAABAAQAAAAQAAgAAAABAAQAAAAQAAcAAAABAAQAAAAQAAYAAAABAAQAAAAQAAUAAAABAAQAAAAQAAQAAAABAAQAAAAPAAsAAAADAAUAAAAPAAoAAAABAAQAAAAPAAkAAAABAAQAAAAPAAgAAAABAAQAAAAPAAcAAAABAAQAAAAPAAYAAAABAAQAAAAPAAUAAAABAAQAAAAPAAQAAAABAAQAAAAOAAsAAAABAAUAAAAOAAoAAAABAAQAAAAOAAkAAAABAAQAAAAOAAgAAAABAAQAAAAOAAcAAAABAAQAAAAOAAYAAAABAAQAAAAOAAUAAAABAAQAAAAOAAQAAAABAAQAAAANAAsAAAABAAUAAAANAAoAAAABAAQAAAANAAkAAAABAAQAAAANAAgAAAABAAQAAAANAAcAAAABAAQAAAANAAYAAAABAAQAAAANAAUAAAABAAQAAAANAAQAAAABAAQAAAAMAAsAAAADAAUAAAAMAAoAAAABAAQAAAAMAAkAAAABAAQAAAAMAAgAAAABAAQAAAAMAAcAAAABAAQAAAAMAAYAAAABAAQAAAAMAAUAAAABAAQAAAAMAAQAAAABAAQAAAALAAsAAAAGAAUAAAALAAoAAAABAAQAAAALAAkAAAABAAQAAAALAAgAAAABAAQAAAALAAcAAAABAAQAAAALAAYAAAABAAQAAAALAAUAAAABAAQAAAALAAQAAAABAAQAAAAKAAsAAAAGAAUAAAAKAAoAAAABAAQAAAAKAAkAAAABAAQAAAAKAAgAAAABAAQAAAAKAAcAAAABAAQAAAAKAAYAAAABAAQAAAAKAAUAAAABAAQAAAAKAAQAAAABAAQAAAAJAAsAAAAGAAUAAAAJAAoAAAABAAQAAAAJAAkAAAABAAQAAAAJAAgAAAABAAQAAAAJAAcAAAABAAQAAAAJAAYAAAABAAQAAAAJAAUAAAABAAQAAAAJAAQAAAABAAQAAAAIAAsAAAAGAAUAAAAIAAoAAAABAAQAAAAIAAkAAAABAAQAAAAIAAgAAAABAAQAAAAIAAcAAAABAAQAAAAIAAYAAAABAAQAAAAIAAUAAAABAAQAAAAIAAQAAAABAAQAAAAHAAsAAAAGAAUAAAAHAAoAAAABAAQAAAAHAAkAAAABAAQAAAAHAAgAAAABAAQAAAAHAAcAAAABAAQAAAAHAAYAAAABAAQAAAAHAAUAAAABAAQAAAAHAAQAAAABAAQAAAAGAAsAAAADAAUAAAAGAAoAAAABAAQAAAAGAAkAAAABAAQAAAAGAAgAAAABAAQAAAAGAAcAAAABAAQAAAAGAAYAAAABAAQAAAAGAAUAAAABAAQAAAAGAAQAAAABAAQAAAAFAAsAAAAGAAUAAAAFAAoAAAABAAQAAAAFAAkAAAABAAQAAAAFAAgAAAABAAQAAAAFAAcAAAABAAQAAAAFAAYAAAABAAQAAAAFAAUAAAABAAQAAAAFAAQAAAABAAQAAAAEAAsAAAADAAUAAAAEAAoAAAABAAQAAAAEAAkAAAABAAQAAAAEAAgAAAABAAQAAAAEAAcAAAABAAQAAAAEAAYAAAABAAQAAAAEAAUAAAABAAQAAAAEAAQAAAABAAQAAAADAAsAAAABAAUAAAADAAoAAAABAAQAAAADAAkAAAABAAQAAAADAAgAAAABAAQAAAADAAcAAAABAAQAAAADAAYAAAABAAQAAAADAAUAAAABAAQAAAADAAQAAAABAAQAAAACAAsAAAADAAUAAAACAAoAAAABAAQAAAACAAkAAAABAAQAAAACAAgAAAABAAQAAAACAAcAAAABAAQAAAACAAYAAAABAAQAAAACAAUAAAABAAQAAAACAAQAAAABAAQAAAABAAsAAAAGAAUAAAABAAoAAAABAAQAAAABAAkAAAABAAQAAAABAAgAAAABAAQAAAABAAcAAAABAAQAAAABAAYAAAABAAQAAAABAAUAAAABAAQAAAABAAQAAAABAAQAAAAAAAsAAAAAAAUAAAAAAAoAAAAAAAMAAAAAAAkAAAAAAAQAAAAAAAgAAAAAAAQAAAAAAAcAAAAAAAQAAAAAAAYAAAAAAAQAAAAAAAUAAAAAAAQAAAAAAAQAAAAAAAQAAAAAAAMAAAAEAAMAAAABAAMAAAAFAAMAAAACAAMAAAAEAAMAAAADAAMAAAAEAAMAAAAEAAMAAAAEAAMAAAAFAAMAAAAFAAMAAAAGAAMAAAAFAAMAAAAHAAMAAAAEAAMAAAAIAAMAAAAFAAMAAAAJAAMAAAAEAAMAAAAKAAMAAAAFAAMAAAALAAMAAAAEAAMAAAAMAAMAAAAFAAMAAAANAAMAAAAFAAMAAAAOAAMAAAAFAAMAAAAPAAMAAAAFAAMAAAAQAAMAAAAFAAMAAAARAAMAAAAEAAMAAAASAAMAAAAFAAMAAAATAAMAAAAEAAMAAAAUAAMAAAAFAAMAAAAVAAMAAAAFAAMAAAAWAAMAAAAFAAMAAAAXAAMAAAAFAAMAAAAYAAMAAAAFAAMAAAAZAAMAAAAFAAMAAAA=")
 tile_set = ExtResource("3_ujdt3")
 
-[node name="NewSlime" parent="." unique_id=475970655 instance=ExtResource("5_tnerh")]
+[node name="Enemies" type="Node" parent="." unique_id=1399081434]
+
+[node name="NewSlime" parent="Enemies" unique_id=475970655 instance=ExtResource("5_tnerh")]
 position = Vector2(216, -32)
 
-[node name="NewSlime2" parent="." unique_id=1974684466 instance=ExtResource("5_tnerh")]
+[node name="NewSlime2" parent="Enemies" unique_id=1974684466 instance=ExtResource("5_tnerh")]
 position = Vector2(40, 0)
 
-[node name="NewSlime3" parent="." unique_id=432235246 instance=ExtResource("5_tnerh")]
+[node name="NewSlime3" parent="Enemies" unique_id=432235246 instance=ExtResource("5_tnerh")]
 position = Vector2(304, 0)

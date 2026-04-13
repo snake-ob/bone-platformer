@@ -10,6 +10,7 @@ class_name Player
 @onready var floor_ray = $Body/FloorRay
 
 signal tile_collided(collision_info: KinematicCollision2D)
+signal new_tile_entered(collision_tile, map_layer)
 signal tile_exited()
 
 const GRAVITY = 275.00
@@ -23,6 +24,8 @@ const JAB_TIME = 0.25
 const CROSS_TIME = 0.25
 const POWER_CROSS_TIME = 0.5
 const CROSS_READY_TIME = 0.15
+
+var current_tile: Vector2i
 
 var current_direction : int
 var new_direction: float:
@@ -67,7 +70,12 @@ func _physics_process(delta):
 		var point = floor_ray.get_collision_point()
 		var normal = floor_ray.get_collision_normal()
 		var collider = floor_ray.get_collider()
-		tile_collided.emit(point, normal, collider)
+		
+		if collider is TileMapLayer:
+			var collision_tile = collider.local_to_map(collider.to_local(point))
+			if collision_tile != current_tile:
+				new_tile_entered.emit(collision_tile, collider)
+			current_tile = collision_tile
 	else:
 		tile_exited.emit()
 	

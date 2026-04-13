@@ -1,0 +1,18 @@
+April 13 2026
+
+QueueManager
+Slots
+{-1:  
+	{
+	active: true, #its supported ground
+	held: N/A, #no enemy on the tile
+	reserved: Slime, #enemy moving to tile
+	pos: -1 #to the left of player
+},
+{-2:
+	{....
+
+	
+
+
+--------

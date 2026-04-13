@@ -8,6 +8,7 @@ var wander_timer : Timer
 
 func _ready():
 	wander_timer = Timer.new()
+	add_child(wander_timer)
 	wander_timer.one_shot = true
 	wander_timer.timeout.connect(_wander_timeout)
 	

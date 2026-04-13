@@ -15,6 +15,36 @@ size = Vector2(20, 9)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3rir7"]
 size = Vector2(21, 12)
 
+[sub_resource type="GDScript" id="GDScript_qhwpm"]
+script/source = "extends State
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _enter_state():
+	pass
+
+func _exit_state():
+	pass
+	
+func _physics_update(delta):
+	var target_pos: Vector2 = actor.target_position
+	var current_pos: Vector2 = actor.current_pos
+
+	var direction = current_pos.direction_to(target_pos)
+	var distance = current_pos.distance_to(target_pos)
+
+	if distance > 5.0:
+		var target_velocity = direction * actor.SPEED
+		actor.velocity = actor.velocity.move_toward(target_velocity, actor.ACCELERATION * delta)
+	else:
+		actor.velocity = actor.velocity.move_toward(Vector2.ZERO, actor.FRICTION * delta)
+	
+	actor.move_and_slide()
+"
+
 [node name="NewSlime" unique_id=475970655 instance=ExtResource("1_2xn8f")]
 script = ExtResource("2_3rir7")
 
@@ -25,8 +55,6 @@ shape = SubResource("RectangleShape2D_pptj7")
 [node name="AnimatedSprite2D" parent="Body" parent_id_path=PackedInt32Array(1363847246) index="0" unique_id=581613343]
 sprite_frames = ExtResource("2_pptj7")
 animation = &"death"
-frame = 3
-frame_progress = 1.0
 
 [node name="CollisionShape2D" parent="HurtBox" parent_id_path=PackedInt32Array(1438169615) index="0"]
 position = Vector2(-0.5, 0)
@@ -48,6 +76,10 @@ script = ExtResource("7_gdq1n")
 
 [node name="Death" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="4" unique_id=1180300085]
 script = ExtResource("8_qhwpm")
+
+[node name="Slotting" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="5" unique_id=814357387]
+script = SubResource("GDScript_qhwpm")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
 
 [node name="Timers" type="Node" parent="." index="6" unique_id=1422118767]
 

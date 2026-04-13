@@ -17,3 +17,8 @@ SLIME
 - If 2 is not available, go to 3
 - 1,2,3 stuns the slime, x eyes
 - big 1,2 when stunned will splat the slime
+
+SLIME calls up asking for available position (and reference to self)
+LEVEL checks tile map and tells the slime the available position it can go to
+LEVEL checks slime vs player position to keep it on the left/right side of player
+
