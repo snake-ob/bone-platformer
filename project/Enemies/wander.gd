@@ -21,9 +21,9 @@ func _enter_state():
 	var time_to_wander = randi_range(1,4)
 	wander_timer.start(time_to_wander)
 	direction = (randi() % 2) * 2 - 1 #reutrns -1 or 1
+	actor.new_direction = direction
 
 func _physics_update(delta):
-	actor.new_direction = direction
 	actor.velocity.x = move_toward(actor.velocity.x, direction * actor.SPEED, actor.ACCELLERATION * delta)
 	apply_gravity(actor, delta)
 	check_falling()

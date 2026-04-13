@@ -15,17 +15,20 @@ var current_player_tile
 func _ready() -> void:
 	$Player.new_tile_entered.connect(_on_player_new_tile)
 	$QueueManager.slots_updated.connect(_on_slots_updated)
-
+	
+	$EnemyManager._catch_enemies($Enemies)
+	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
 
 func _on_player_new_tile(new_tile, tilemap):
 	$QueueManager.refresh_tiles(new_tile, tilemap)
+	$EnemyManager.set_enemy_targets()
 	
 func _on_slots_updated(slots):
+	$EnemyManager.player_pos = $Player.global_position
 	$EnemyManager._catch_slots(slots)
-	
 "
 
 [sub_resource type="GDScript" id="GDScript_e6i1n"]
@@ -45,13 +48,14 @@ class Slot:
 	func _to_string():
 		return \"Slot(index:%d, x:%d, y:%d)\" % [pos_index, centre.x, centre.y]
 		
-var slots: Array
+var slots: Dictionary
 
 signal slots_updated(slots)
 
 func _draw():
-	for slot in slots:
-		var draw_pos = Vector2(slot.centre) - global_position
+	for key in slots:
+		var slot = slots[key]
+		var draw_pos = slot.centre - global_position
 		draw_circle(draw_pos, 5.0, Color.INDIAN_RED)
 
 func _ready():
@@ -59,14 +63,15 @@ func _ready():
 		if i == 0: continue
 		var new_slot = Slot.new()
 		new_slot.pos_index = i
-		slots.append(new_slot)
+		slots[i] = new_slot
 	print(slots)
 
 func refresh_tiles(new_tile :Vector2i, tile_map: TileMapLayer):
 	var centre_tile_pos = tile_map.to_global(tile_map.map_to_local(new_tile))
 	var tile_width = tile_map.tile_set.tile_size.x
 	
-	for slot in slots:
+	for key in slots:
+		var slot = slots[key]
 		var offset_x = slot.pos_index * tile_width
 		slot.centre.x = centre_tile_pos.x + offset_x
 		slot.centre.y = centre_tile_pos.y
@@ -78,7 +83,9 @@ func refresh_tiles(new_tile :Vector2i, tile_map: TileMapLayer):
 [sub_resource type="GDScript" id="GDScript_tnerh"]
 script/source = "extends Node
 
-var slots: Array
+var slots: Dictionary
+var focused_enemies: Array
+var player_pos: Vector2
 
 # Keeps track of all enemy positions close to player
 # Gives each enemy a slot target on queue refresh
@@ -92,17 +99,39 @@ var slots: Array
 # (this will form a line where they wait for the next enemy to
 # get out of the way)
 
-func _catch_slots(new_slots: Array):
+
+func _catch_slots(new_slots: Dictionary):
 	# QueueManager will pass new slots every update
 	if new_slots:
 		slots = new_slots
+
+func set_enemy_targets():
+	for enemy in focused_enemies:
+		var pref_slot = enemy.target_slot
+		if enemy.global_position.x < player_pos.x:
+			pref_slot *= -1
+			
+		enemy.target_pos = slots[pref_slot].centre
+		print(enemy.target_pos)
+		
+	set_enemy_states()
+
+
+func set_enemy_states():
+	for enemy in focused_enemies:
+		enemy._set_state('slotting')
+
+func _catch_enemies(EnemyNode: Node):
+	var enemies = EnemyNode.get_children()
+	focused_enemies = enemies
 "
 
 [node name="LevelTest_Mar25" type="Node2D" unique_id=1451453980]
 script = SubResource("GDScript_xnb64")
 
 [node name="Player" parent="." unique_id=1304642200 instance=ExtResource("1_fepeq")]
-position = Vector2(88, -40)
+position = Vector2(176, -40)
+JUMP_FORCE = 100.0
 
 [node name="QueueManager" type="Node2D" parent="." unique_id=1050496794]
 z_index = 1
@@ -132,8 +161,11 @@ tile_set = ExtResource("3_ujdt3")
 [node name="NewSlime" parent="Enemies" unique_id=475970655 instance=ExtResource("5_tnerh")]
 position = Vector2(216, -32)
 
-[node name="NewSlime2" parent="Enemies" unique_id=1974684466 instance=ExtResource("5_tnerh")]
-position = Vector2(40, 0)
+[node name="NewSlime2" parent="Enemies" unique_id=130183903 instance=ExtResource("5_tnerh")]
+position = Vector2(352, 0)
 
-[node name="NewSlime3" parent="Enemies" unique_id=432235246 instance=ExtResource("5_tnerh")]
-position = Vector2(304, 0)
+[node name="NewSlime3" parent="Enemies" unique_id=166002059 instance=ExtResource("5_tnerh")]
+position = Vector2(104, 0)
+
+[node name="NewSlime4" parent="Enemies" unique_id=1228568211 instance=ExtResource("5_tnerh")]
+position = Vector2(40, 16)

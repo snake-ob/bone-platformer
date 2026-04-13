@@ -10,7 +10,8 @@ const MAX_HEALTH = 10
 const PREF_SLOT = 2
 var health : int
 
-var target_position : Vector2
+var target_pos : Vector2
+var target_slot = 1
 
 signal get_target_position(requester)
 
@@ -31,5 +32,8 @@ func _on_hurt_box_take_slam(force:Variant, damage: Variant) -> void:
 	if $StateMachine.current_state.name == "Stun":
 		StateMachine._set_state("death")
 		
-func _set_target_position():
-	pass
+func _set_target_position(new_pos):
+	target_pos = new_pos
+	
+func _set_state(new_state):
+	$StateMachine._set_state(new_state)
