@@ -72,6 +72,10 @@ func _physics_process(delta):
 		var collider = floor_ray.get_collider()
 		
 		if collider is TileMapLayer:
+			var no_states = ['idle', 'jab', 'cross', 'hook']
+			var current_state = $StateMachine.current_state.to_string()
+			if current_state in no_states:
+				pass
 			var collision_tile = collider.local_to_map(collider.to_local(point))
 			if collision_tile != current_tile:
 				new_tile_entered.emit(collision_tile, collider)

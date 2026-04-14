@@ -8,6 +8,7 @@ class_name Enemy
 @onready var Sprite = $Body/AnimatedSprite2D
 @onready var softCollision = $SoftCollision
 
+
 var ready_to_chase : bool:
 	set(value):
 		ready_to_chase = value
@@ -27,6 +28,8 @@ var new_direction: float:
 
 var player : Node
 var current_state : String
+var in_player_range: bool
+
 
 
 func _ready():

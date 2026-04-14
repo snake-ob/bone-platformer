@@ -11,7 +11,7 @@ const PREF_SLOT = 2
 var health : int
 
 var target_pos : Vector2
-var target_slot = 1
+var target_slot = 2
 
 signal get_target_position(requester)
 
@@ -23,6 +23,14 @@ func _ready():
 	super()
 	StateMachine._set_state("idle")
 	health = MAX_HEALTH
+	$DetectionZone.player_detected.connect(_player_detected)
+	$DetectionZone.player_lost.connect(_player_lost)
+	
+func _player_detected():
+	in_player_range = true
+
+func _player_lost():
+	in_player_range = false
 	
 func _on_hurt_box_take_stun(force: Variant, damage: Variant) -> void:
 	StateMachine._set_state("stun")

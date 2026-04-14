@@ -15,6 +15,29 @@ size = Vector2(20, 9)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3rir7"]
 size = Vector2(21, 12)
 
+[sub_resource type="GDScript" id="GDScript_gc12v"]
+script/source = "extends Area2D
+
+signal player_detected()
+signal player_lost()
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	body_entered.connect(_on_body_entered)
+	body_exited.connect(_on_body_exited)
+
+func _on_body_entered(body):
+	if body is Player:
+		player_detected.emit()
+
+func _on_body_exited(body):
+	if body is Player:
+		player_lost.emit()
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qhwpm"]
+size = Vector2(98.0007, 132.24998)
+
 [sub_resource type="GDScript" id="GDScript_qhwpm"]
 script/source = "extends State
 
@@ -29,8 +52,8 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _enter_state():
 	change_animation.emit(\"walk\")
-	current_pos = actor.global_position
 	target_pos = actor.target_pos
+	current_pos = actor.global_position
 	direction = current_pos.direction_to(actor.target_pos)
 	actor.new_direction = direction.x
 	
@@ -38,15 +61,78 @@ func _exit_state():
 	pass
 	
 func _physics_update(delta):
-	var distance = current_pos.distance_to(target_pos)
+	current_pos = actor.global_position
+
+	var distance = abs(current_pos.x - target_pos.x)
 
 	if distance > 5.0:
 		var target_velocity = direction * actor.SPEED
 		actor.velocity = actor.velocity.move_toward(target_velocity, actor.ACCELLERATION * delta)
 	else:
-		actor.velocity = actor.velocity.move_toward(Vector2.ZERO, actor.FRICTION * delta)
+		change_state.emit('slotted')
 	
 	actor.move_and_slide()
+"
+
+[sub_resource type="GDScript" id="GDScript_pglec"]
+script/source = "extends State
+
+var direction
+var target_pos
+var current_pos
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _enter_state():
+	change_animation.emit(\"idle\")
+	target_pos = actor.target_pos
+	current_pos = actor.global_position
+	direction = current_pos.direction_to(actor.target_pos)
+	actor.new_direction = direction.x
+	
+func _exit_state():
+	pass
+	
+func _physics_update(delta):
+	apply_friction(actor, delta)
+	apply_gravity(actor, delta)
+	
+	current_pos = actor.global_position
+
+	var distance = abs(current_pos.x - target_pos.x)
+	
+	if !actor.in_player_range:
+		change_state.emit('idle')
+	elif distance < 5.0:
+		change_state.emit('slotting')
+	
+	actor.move_and_slide()
+"
+
+[sub_resource type="GDScript" id="GDScript_kbgtr"]
+script/source = "extends State
+
+func _enter_state():
+	change_animation.emit(\"fall\")
+	
+func _physics_update(delta):
+	if actor.is_on_floor():
+		change_state.emit(\"land\")
+	apply_gravity(actor, delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_djh1h"]
+script/source = "extends State
+
+const LAND_TIMER = 0.2
+
+func _enter_state():
+	change_animation.emit(\"land\")
+	actor.velocity = Vector2.ZERO
+	await get_tree().create_timer(LAND_TIMER).timeout
+	actor.ready_to_chase = false
+	actor.ready_to_attack = false
+	change_state.emit(\"idle\")
+	
 "
 
 [node name="NewSlime" unique_id=475970655 instance=ExtResource("1_2xn8f")]
@@ -64,6 +150,14 @@ animation = &"death"
 position = Vector2(-0.5, 0)
 shape = SubResource("RectangleShape2D_3rir7")
 debug_color = Color(1, 0, 0.33333334, 0.54509807)
+
+[node name="DetectionZone" parent="." index="3" unique_id=1656946126]
+collision_mask = 2
+script = SubResource("GDScript_gc12v")
+
+[node name="CollisionShape2D" parent="DetectionZone" index="0" unique_id=1904000838]
+position = Vector2(-1, -3.637979e-12)
+shape = SubResource("RectangleShape2D_qhwpm")
 
 [node name="Idle" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="0" unique_id=818930391]
 script = ExtResource("3_3rir7")
@@ -84,6 +178,16 @@ script = ExtResource("8_qhwpm")
 [node name="Slotting" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="5" unique_id=814357387]
 script = SubResource("GDScript_qhwpm")
 metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
+[node name="Slotted" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="6" unique_id=1572410104]
+script = SubResource("GDScript_pglec")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
+[node name="Fall" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="7" unique_id=507286584]
+script = SubResource("GDScript_kbgtr")
+
+[node name="Land" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="8" unique_id=1374747801]
+script = SubResource("GDScript_djh1h")
 
 [node name="Timers" type="Node" parent="." index="6" unique_id=1422118767]
 
