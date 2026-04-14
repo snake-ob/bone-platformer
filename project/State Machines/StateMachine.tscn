@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://bysbmq2osg5i2"]
+[gd_scene format=3 uid="uid://bysbmq2osg5i2"]
 
-[ext_resource type="Script" path="res://State Machines/state-machine.gd" id="1_afr4s"]
+[ext_resource type="Script" uid="uid://dt6fl1kxepj3e" path="res://State Machines/state-machine.gd" id="1_afr4s"]
 
-[node name="StateMachine" type="Node"]
+[node name="StateMachine" type="Node" unique_id=2063499776]
 script = ExtResource("1_afr4s")

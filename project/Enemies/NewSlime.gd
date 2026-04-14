@@ -14,6 +14,8 @@ var target_pos : Vector2
 var target_slot = 2
 
 signal get_target_position(requester)
+signal player_range(enemy)
+signal player_lost(enemy)
 
 func _on_hurt_box_take_hit(force, damage):
 	velocity += force
@@ -28,9 +30,12 @@ func _ready():
 	
 func _player_detected():
 	in_player_range = true
+	player_range.emit(self)
+	
 
 func _player_lost():
 	in_player_range = false
+	player_lost.emit(self)
 	
 func _on_hurt_box_take_stun(force: Variant, damage: Variant) -> void:
 	StateMachine._set_state("stun")
