@@ -10,21 +10,23 @@ resource_name = "Level"
 script/source = "extends Node2D
 
 var current_player_tile
-
 var active_enemies : Array
 
 func _ready() -> void:
 	$Player.new_tile_entered.connect(_on_player_new_tile)
 	$QueueManager.slots_updated.connect(_on_slots_updated)
-	
+
 	for enemy in $Enemies.get_children():
 		enemy.player_range.connect(_on_player_range)
 		enemy.player_lost.connect(_on_player_lost)
+		enemy.get_player_pos.connect(_on_player_pos_request)
 
 func _on_player_new_tile(new_tile, tilemap):
+	active_enemies = sort_enemies_by_distance(active_enemies)
+
 	$QueueManager.refresh_tiles(new_tile, tilemap)
 	$EnemyManager.set_enemy_targets()
-	
+
 func _on_slots_updated(slots):
 	$EnemyManager.player_pos = $Player.global_position
 	$EnemyManager._catch_slots(slots)
@@ -36,6 +38,18 @@ func _on_player_range(enemy: Node2D):
 func _on_player_lost(enemy: Node2D):
 	active_enemies.erase(enemy)
 	$EnemyManager._catch_enemies(active_enemies)
+
+func sort_enemies_by_distance(enemy_array: Array):
+	enemy_array.sort_custom(func(a, b):
+		var dist_a = a.global_position.distance_squared_to($Player.global_position)
+		var dist_b = b.global_position.distance_squared_to($Player.global_position)
+		
+		return dist_a < dist_b
+	)
+	return enemy_array
+
+func _on_player_pos_request(requester):
+	requester._catch_player_pos($Player.global_position)
 "
 
 [sub_resource type="GDScript" id="GDScript_e6i1n"]
@@ -121,7 +135,6 @@ func set_enemy_targets():
 			pref_slot *= -1
 		try_slotting(enemy, pref_slot)
 
-
 func try_slotting(enemy, pref_slot):
 	if pref_slot > 3 or pref_slot < -3:
 		return
@@ -143,7 +156,7 @@ func _catch_enemies(enemies: Array):
 script = SubResource("GDScript_xnb64")
 
 [node name="Player" parent="." unique_id=1304642200 instance=ExtResource("1_fepeq")]
-position = Vector2(176, -40)
+position = Vector2(80, -16)
 JUMP_FORCE = 100.0
 
 [node name="QueueManager" type="Node2D" parent="." unique_id=1050496794]
@@ -164,16 +177,7 @@ tile_set = ExtResource("3_ujdt3")
 [node name="Enemies" type="Node" parent="." unique_id=1399081434]
 
 [node name="NewSlime" parent="Enemies" unique_id=475970655 instance=ExtResource("5_tnerh")]
-position = Vector2(264, -32)
-
-[node name="NewSlime2" parent="Enemies" unique_id=386084949 instance=ExtResource("5_tnerh")]
-position = Vector2(240, 0)
+position = Vector2(168, -16)
 
 [node name="NewSlime3" parent="Enemies" unique_id=1415968074 instance=ExtResource("5_tnerh")]
-position = Vector2(360, 0)
-
-[node name="NewSlime4" parent="Enemies" unique_id=1257960038 instance=ExtResource("5_tnerh")]
-position = Vector2(120, -8)
-
-[node name="NewSlime5" parent="Enemies" unique_id=1270611824 instance=ExtResource("5_tnerh")]
-position = Vector2(80, 0)
+position = Vector2(272, -8)

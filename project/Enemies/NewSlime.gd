@@ -16,6 +16,7 @@ var target_slot = 2
 signal get_target_position(requester)
 signal player_range(enemy)
 signal player_lost(enemy)
+signal get_player_pos(enemy)
 
 func _on_hurt_box_take_hit(force, damage):
 	velocity += force
@@ -27,11 +28,16 @@ func _ready():
 	health = MAX_HEALTH
 	$DetectionZone.player_detected.connect(_player_detected)
 	$DetectionZone.player_lost.connect(_player_lost)
+	$StateMachine/Slotted.get_player_pos.connect(_player_pos_request)
+	
+func _process(delta):
+	$DebugRay.target_pos = target_pos
+	$DebugRay.start_pos = global_position
+	pass
 	
 func _player_detected():
 	in_player_range = true
 	player_range.emit(self)
-	
 
 func _player_lost():
 	in_player_range = false
@@ -50,3 +56,6 @@ func _set_target_position(new_pos):
 	
 func _set_state(new_state):
 	$StateMachine._set_state(new_state)
+
+func _player_pos_request(requester : Node):
+	get_player_pos.emit(requester)

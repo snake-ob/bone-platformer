@@ -10,7 +10,7 @@
 [ext_resource type="Script" uid="uid://ddpsdxn4q67fp" path="res://Enemies/death.gd" id="8_qhwpm"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pptj7"]
-size = Vector2(20, 9)
+size = Vector2(18, 9)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3rir7"]
 size = Vector2(21, 12)
@@ -53,21 +53,22 @@ func _ready() -> void:
 func _enter_state():
 	change_animation.emit(\"walk\")
 	target_pos = actor.target_pos
-	current_pos = actor.global_position
-	direction = current_pos.direction_to(actor.target_pos)
-	actor.new_direction = direction.x
 	
 func _exit_state():
 	pass
 	
 func _physics_update(delta):
+	target_pos = actor.target_pos
 	current_pos = actor.global_position
-	apply_friction(actor, delta)
+	direction = current_pos.direction_to(actor.target_pos)
+	actor.new_direction = direction.x
+
+	current_pos = actor.global_position
 	apply_gravity(actor, delta)
 
 	var distance = abs(current_pos.x - target_pos.x)
 
-	if distance > 5.0:
+	if distance > 1.0:
 		var target_velocity = direction * actor.SPEED
 		actor.velocity = actor.velocity.move_toward(target_velocity, actor.ACCELLERATION * delta)
 	else:
@@ -82,13 +83,17 @@ script/source = "extends State
 var direction
 var target_pos
 var current_pos
+var player_pos
+
+signal get_player_pos(requester: Node)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _enter_state():
+	get_player_pos.emit(self)
 	change_animation.emit(\"idle\")
 	target_pos = actor.target_pos
 	current_pos = actor.global_position
-	direction = current_pos.direction_to(actor.target_pos)
+	direction = current_pos.direction_to(player_pos)
 	actor.new_direction = direction.x
 	
 func _exit_state():
@@ -108,6 +113,9 @@ func _physics_update(delta):
 		change_state.emit('slotting')
 	
 	actor.move_and_slide()
+
+func _catch_player_pos(new_pos):
+	player_pos = new_pos
 "
 
 [sub_resource type="GDScript" id="GDScript_kbgtr"]
@@ -135,6 +143,19 @@ func _enter_state():
 	actor.ready_to_attack = false
 	change_state.emit(\"idle\")
 	
+"
+
+[sub_resource type="GDScript" id="GDScript_y6gtr"]
+script/source = "extends RayCast2D
+
+@export var actor: CharacterBody2D
+var target_pos : Vector2
+var start_pos : Vector2
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	global_position = start_pos
+	target_position = target_pos - start_pos
 "
 
 [node name="NewSlime" unique_id=475970655 instance=ExtResource("1_2xn8f")]
@@ -196,6 +217,9 @@ script = SubResource("GDScript_djh1h")
 [node name="AttackTimer" type="Timer" parent="Timers" index="0" unique_id=408989233]
 
 [node name="ChaseTimer" type="Timer" parent="Timers" index="1" unique_id=1536812562]
+
+[node name="DebugRay" type="RayCast2D" parent="." index="7" unique_id=548523847]
+script = SubResource("GDScript_y6gtr")
 
 [connection signal="take_hit" from="HurtBox" to="." method="_on_hurt_box_take_hit"]
 [connection signal="take_slam" from="HurtBox" to="." method="_on_hurt_box_take_slam"]

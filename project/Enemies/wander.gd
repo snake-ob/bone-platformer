@@ -5,12 +5,17 @@ extends State
 @export var playerDetection : Node
 var direction
 var wander_timer : Timer
+var slot_timer : Timer
 
 func _ready():
 	wander_timer = Timer.new()
 	add_child(wander_timer)
 	wander_timer.one_shot = true
 	wander_timer.timeout.connect(_wander_timeout)
+	
+	slot_timer = Timer.new()
+	add_child(slot_timer)
+	slot_timer.timeout.connect(_slot_timeout)
 	
 func _exit_state():
 	wander_timer.stop()
@@ -36,3 +41,7 @@ func check_falling():
 
 func _wander_timeout():
 	change_state.emit('idle')
+	
+func _slot_timeout():
+	if actor.in_player_range:
+		change_state.emit('slotting')
