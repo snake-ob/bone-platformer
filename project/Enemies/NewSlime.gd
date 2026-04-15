@@ -12,6 +12,7 @@ var health : int
 
 var target_pos : Vector2
 var target_slot = 2
+var current_slot : int
 
 signal get_target_position(requester)
 signal player_range(enemy)

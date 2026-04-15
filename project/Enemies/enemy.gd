@@ -64,8 +64,8 @@ func set_initial_state(new_state : String):
 	
 func check_colliding(delta):
 	if softCollision.has_overlapping_areas():
-		if current_state == "idle" || current_state == "chase":
-			velocity.x += softCollision.get_push_vector().x * delta * 150
+		#if current_state == "idle" || current_state == "chase":
+		velocity.x += softCollision.get_push_vector().x * delta * 150
 			
 func _on_state_changed(new_state : String):
 	current_state = new_state

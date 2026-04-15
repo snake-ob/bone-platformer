@@ -19,6 +19,7 @@ func _ready():
 	
 func _exit_state():
 	wander_timer.stop()
+	slot_timer.stop()
 
 func _enter_state():
 	change_animation.emit("walk")

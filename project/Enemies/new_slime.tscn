@@ -38,6 +38,9 @@ func _on_body_exited(body):
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qhwpm"]
 size = Vector2(98.0007, 132.24998)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_qhwpm"]
+radius = 6.0
+
 [sub_resource type="GDScript" id="GDScript_qhwpm"]
 script/source = "extends State
 
@@ -85,7 +88,15 @@ var target_pos
 var current_pos
 var player_pos
 
+var jump_timer : Timer
+
+
 signal get_player_pos(requester: Node)
+
+func _ready():
+	jump_timer = Timer.new()
+	add_child(jump_timer)
+	jump_timer.timeout.connect(try_attack)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _enter_state():
@@ -96,8 +107,10 @@ func _enter_state():
 	direction = current_pos.direction_to(player_pos)
 	actor.new_direction = direction.x
 	
+	jump_timer.start(2)
+	
 func _exit_state():
-	pass
+	jump_timer.stop()
 	
 func _physics_update(delta):
 	apply_friction(actor, delta)
@@ -116,6 +129,10 @@ func _physics_update(delta):
 
 func _catch_player_pos(new_pos):
 	player_pos = new_pos
+
+func try_attack():
+	if actor.target_slot == actor.target_slot:
+		change_state.emit('jump')
 "
 
 [sub_resource type="GDScript" id="GDScript_kbgtr"]
@@ -133,16 +150,57 @@ func _physics_update(delta):
 [sub_resource type="GDScript" id="GDScript_djh1h"]
 script/source = "extends State
 
-const LAND_TIMER = 0.2
+const LAND_TIME = 0.2
+var land_timer : Timer
+
+func _ready():
+	land_timer = Timer.new()
+	add_child(land_timer)
+	land_timer.one_shot = true
+	land_timer.timeout.connect(_on_land)
 
 func _enter_state():
 	change_animation.emit(\"land\")
 	actor.velocity = Vector2.ZERO
-	await get_tree().create_timer(LAND_TIMER).timeout
+	land_timer.start(LAND_TIME)
+	
+func _exit_state():
+	land_timer.stop()
+
+
+func _on_land():
 	actor.ready_to_chase = false
 	actor.ready_to_attack = false
 	change_state.emit(\"idle\")
-	
+"
+
+[sub_resource type="GDScript" id="GDScript_t34n4"]
+script/source = "extends State
+
+func _enter_state():
+	change_animation.emit(\"load\")
+	actor.velocity = Vector2.ZERO
+	var load_timer = randf_range(0.2, 1.0)
+	await get_tree().create_timer(load_timer).timeout
+	change_state.emit(\"jump\")
+
+func _physics_update(delta):
+	apply_gravity(actor, delta)
+	apply_friction(actor, delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_i63g1"]
+script/source = "extends State
+
+func _enter_state():
+	change_animation.emit(\"jump\")
+	actor.velocity.x += (actor.JUMP_LENGTH * actor.current_direction)
+	actor.velocity.y -= actor.JUMP_HEIGHT
+
+func _physics_update(delta):
+	if actor.velocity.y >= 0:
+		change_state.emit(\"fall\")
+	apply_gravity(actor, delta)
 "
 
 [sub_resource type="GDScript" id="GDScript_y6gtr"]
@@ -159,6 +217,7 @@ func _process(delta: float) -> void:
 "
 
 [node name="NewSlime" unique_id=475970655 instance=ExtResource("1_2xn8f")]
+collision_layer = 4
 script = ExtResource("2_3rir7")
 
 [node name="CollisionShape2D" parent="." index="0" unique_id=1707792468]
@@ -181,6 +240,10 @@ script = SubResource("GDScript_gc12v")
 [node name="CollisionShape2D" parent="DetectionZone" index="0" unique_id=1904000838]
 position = Vector2(-1, -3.637979e-12)
 shape = SubResource("RectangleShape2D_qhwpm")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="SoftCollision" parent_id_path=PackedInt32Array(2003785463) index="1" unique_id=3138412]
+position = Vector2(0, 2)
+shape = SubResource("CircleShape2D_qhwpm")
 
 [node name="Idle" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="0" unique_id=818930391]
 script = ExtResource("3_3rir7")
@@ -211,6 +274,12 @@ script = SubResource("GDScript_kbgtr")
 
 [node name="Land" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="8" unique_id=1374747801]
 script = SubResource("GDScript_djh1h")
+
+[node name="Load" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="9" unique_id=114111720]
+script = SubResource("GDScript_t34n4")
+
+[node name="Jump" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="10" unique_id=810284658]
+script = SubResource("GDScript_i63g1")
 
 [node name="Timers" type="Node" parent="." index="6" unique_id=1422118767]
 

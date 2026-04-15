@@ -6,6 +6,7 @@ class_name Player
 @onready var Body = $Body
 @onready var crossTimer = $CrossTimer
 @onready var orientationTimer = $OrientationTimer
+@onready var softCollision = $SoftCollision
 
 @onready var floor_ray = $Body/FloorRay
 
@@ -24,6 +25,7 @@ const JAB_TIME = 0.25
 const CROSS_TIME = 0.25
 const POWER_CROSS_TIME = 0.5
 const CROSS_READY_TIME = 0.15
+@export var FRICTION: int = 10
 
 var current_tile: Vector2i
 
@@ -63,6 +65,7 @@ func set_state(state : String):
 	
 	
 func _physics_process(delta):
+	check_colliding(delta)
 	move_and_slide()
 	var collision = get_last_slide_collision()
 	
@@ -91,11 +94,14 @@ func _on_change_animation(new_animation):
 
 func _on_cross_timer_timeout():
 	cross_ready = false
-	
 
 func _on_orientation_timer_timeout():
 	orientation_ready = true
 
-
 func _on_crouch_jab_body_entered(body):
 	pass # Replace with function body.
+	
+func check_colliding(delta):
+	if softCollision.has_overlapping_areas():
+		#if current_state == "idle" || current_state == "chase":
+		velocity.x += softCollision.get_push_vector().x * delta * 150

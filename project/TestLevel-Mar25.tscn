@@ -24,7 +24,7 @@ func _ready() -> void:
 func _on_player_new_tile(new_tile, tilemap):
 	active_enemies = sort_enemies_by_distance(active_enemies)
 
-	$QueueManager.refresh_tiles(new_tile, tilemap)
+	$QueueManager.refresh_tiles(new_tile, tilemap) 
 	$EnemyManager.set_enemy_targets()
 
 func _on_slots_updated(slots):
@@ -43,7 +43,7 @@ func sort_enemies_by_distance(enemy_array: Array):
 	enemy_array.sort_custom(func(a, b):
 		var dist_a = a.global_position.distance_squared_to($Player.global_position)
 		var dist_b = b.global_position.distance_squared_to($Player.global_position)
-		
+
 		return dist_a < dist_b
 	)
 	return enemy_array
@@ -141,6 +141,7 @@ func try_slotting(enemy, pref_slot):
 	if slots[pref_slot].is_available():
 		enemy.target_pos = slots[pref_slot].centre
 		slots[pref_slot].reserved_by = enemy
+		enemy.current_slot = pref_slot
 	elif pref_slot > 0:
 		pref_slot += 1
 		try_slotting(enemy, pref_slot)
@@ -156,8 +157,9 @@ func _catch_enemies(enemies: Array):
 script = SubResource("GDScript_xnb64")
 
 [node name="Player" parent="." unique_id=1304642200 instance=ExtResource("1_fepeq")]
-position = Vector2(80, -16)
+position = Vector2(176, -104)
 JUMP_FORCE = 100.0
+FRICTION = 50
 
 [node name="QueueManager" type="Node2D" parent="." unique_id=1050496794]
 z_index = 1
@@ -177,7 +179,4 @@ tile_set = ExtResource("3_ujdt3")
 [node name="Enemies" type="Node" parent="." unique_id=1399081434]
 
 [node name="NewSlime" parent="Enemies" unique_id=475970655 instance=ExtResource("5_tnerh")]
-position = Vector2(168, -16)
-
-[node name="NewSlime3" parent="Enemies" unique_id=1415968074 instance=ExtResource("5_tnerh")]
-position = Vector2(272, -8)
+position = Vector2(240, -40)

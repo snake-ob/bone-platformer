@@ -23,13 +23,8 @@ func _exit_state():
 
 func _physics_update(delta):
 	apply_gravity(actor, delta)
-	check_falling()
 	apply_friction(actor, delta)
-	
 
-func check_falling():
-	if ! actor.is_on_floor():
-		change_state.emit('fall')
 
 func _stun_timeout():
 	change_state.emit('idle')

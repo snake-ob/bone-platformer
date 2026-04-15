@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dj8635lmd5oyn" path="res://Assets/Sprite Sheets/boxer-spritesheet.png" id="1_f501w"]
 [ext_resource type="PackedScene" uid="uid://bysbmq2osg5i2" path="res://State Machines/StateMachine.tscn" id="2_qm0nl"]
 [ext_resource type="Texture2D" uid="uid://bt76al0e22kov" path="res://Assets/Sprite Sheets/boxer-bonesly-Sheet.png" id="3_mstqf"]
+[ext_resource type="Script" uid="uid://dekdrj2dp7q8i" path="res://Nodes/soft_collision.gd" id="5_8g4oa"]
 
 [sub_resource type="GDScript" id="GDScript_q5sgk"]
 script/source = "extends Area2D
@@ -479,6 +480,7 @@ func _enter_state():
 
 func _physics_update(delta):
 	apply_gravity(Actor, delta)
+	apply_friction(Actor, delta)
 	
 	var input = Vector2.ZERO
 	input.x = Input.get_axis(\"ui_left\", \"ui_right\")
@@ -929,6 +931,10 @@ func move_direction(delta, input):
 		Actor.velocity.x = move_toward(Actor.velocity.x, Actor.AERIAL_SPEED * input.x, Actor.ACCELLERATION)
 "
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6ysni"]
+radius = 6.0
+height = 16.0
+
 [node name="Player" type="CharacterBody2D" unique_id=1517185507]
 position = Vector2(2.08165e-12, 2.08165e-12)
 collision_layer = 2
@@ -1129,6 +1135,16 @@ one_shot = true
 [node name="OrientationTimer" type="Timer" parent="." unique_id=24299992]
 wait_time = 0.5
 one_shot = true
+
+[node name="SoftCollision" type="Area2D" parent="." unique_id=1810078963]
+collision_layer = 32
+collision_mask = 32
+script = ExtResource("5_8g4oa")
+metadata/_custom_type_script = "uid://dekdrj2dp7q8i"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SoftCollision" unique_id=886755743]
+position = Vector2(-2.08165e-12, -6)
+shape = SubResource("CapsuleShape2D_6ysni")
 
 [connection signal="area_entered" from="Body/HitBoxes/AerialDown" to="Body/HitBoxes/AerialDown" method="_on_area_entered"]
 [connection signal="area_entered" from="Body/HitBoxes/AerialDown" to="StateMachine/DownAerial" method="_on_aerial_down_area_entered"]
