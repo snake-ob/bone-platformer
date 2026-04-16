@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dj8635lmd5oyn" path="res://Assets/Sprite Sheets/boxer-spritesheet.png" id="1_f501w"]
 [ext_resource type="PackedScene" uid="uid://bysbmq2osg5i2" path="res://State Machines/StateMachine.tscn" id="2_qm0nl"]
 [ext_resource type="Texture2D" uid="uid://bt76al0e22kov" path="res://Assets/Sprite Sheets/boxer-bonesly-Sheet.png" id="3_mstqf"]
+[ext_resource type="Texture2D" uid="uid://ba742jx585fok" path="res://Assets/Sprite Sheets/boxer-bonesly-Sheet-apr15.png" id="4_6ysni"]
 [ext_resource type="Script" uid="uid://dekdrj2dp7q8i" path="res://Nodes/soft_collision.gd" id="5_8g4oa"]
 
 [sub_resource type="GDScript" id="GDScript_q5sgk"]
@@ -264,9 +265,9 @@ region = Rect2(300, 0, 30, 40)
 atlas = ExtResource("1_f501w")
 region = Rect2(330, 0, 30, 40)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_wbvik"]
-atlas = ExtResource("1_f501w")
-region = Rect2(390, 0, 30, 40)
+[sub_resource type="AtlasTexture" id="AtlasTexture_s1rgi"]
+atlas = ExtResource("4_6ysni")
+region = Rect2(570, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7454o"]
 atlas = ExtResource("1_f501w")
@@ -436,11 +437,11 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_wbvik")
+"texture": SubResource("AtlasTexture_s1rgi")
 }],
-"loop": true,
-"name": &"up_aerial",
-"speed": 5.0
+"loop": false,
+"name": &"uppercut",
+"speed": 24.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -501,6 +502,8 @@ func _physics_update(delta):
 func process_punch():
 	if Actor.cross_ready == true:
 		change_state.emit(\"cross\")
+	elif Input.is_action_pressed(\"ui_up\"):
+		change_state.emit(\"uppercut\")
 	else:
 		change_state.emit(\"jab\")
 	
@@ -544,6 +547,8 @@ func move_direction(delta, input):
 func process_punch():
 	if Actor.cross_ready == true:
 		change_state.emit(\"cross\")
+	elif Input.is_action_pressed(\"ui_up\"):
+		change_state.emit(\"uppercut\")
 	else:
 		change_state.emit(\"jab\")
 "
@@ -931,6 +936,48 @@ func move_direction(delta, input):
 		Actor.velocity.x = move_toward(Actor.velocity.x, Actor.AERIAL_SPEED * input.x, Actor.ACCELLERATION)
 "
 
+[sub_resource type="GDScript" id="GDScript_8g4oa"]
+script/source = "extends State
+
+@export var UPPERCUT_VELOCITY = 400
+
+@export var Actor : Node
+@export var HitBox : Node
+var punch_held : bool
+
+var uppercut_timer : Timer
+
+func _ready():
+	uppercut_timer = Timer.new()
+	add_child(uppercut_timer)
+	uppercut_timer.one_shot = true
+	uppercut_timer.timeout.connect(_on_uppercut_finished)
+
+func _enter_state():
+	HitBox.set_disabled(false)
+	punch_held = true
+	if Actor:
+		Actor.velocity.x = Actor.velocity.x/2
+		Actor.velocity.y -= UPPERCUT_VELOCITY
+	change_animation.emit(\"uppercut\")
+	#uppercut_timer.start(2)
+
+func _physics_update(delta):
+	if Actor.velocity.y >= 0:
+		change_state.emit('fall')
+	apply_gravity(Actor, delta)
+
+func _exit_state():
+	HitBox.set_disabled(true)
+	uppercut_timer.stop()
+
+func _on_uppercut_finished():
+	if Actor.velocity.y !=0:
+		change_state.emit(\"fall\")
+	else:
+		change_state.emit(\"idle\")
+"
+
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6ysni"]
 radius = 6.0
 height = 16.0
@@ -1046,7 +1093,7 @@ debug_color = Color(1, 0.34902, 0.423529, 0.545098)
 texture_filter = 1
 position = Vector2(3, -12)
 sprite_frames = SubResource("SpriteFrames_xnr8x")
-animation = &"down_aerial"
+animation = &"cross"
 
 [node name="FloorRay" type="RayCast2D" parent="Body" unique_id=1467467166]
 position = Vector2(-2.08165e-12, -10)
@@ -1128,6 +1175,13 @@ Actor = NodePath("../..")
 [node name="Pogo" type="Node" parent="StateMachine" unique_id=55743994 node_paths=PackedStringArray("Actor")]
 script = SubResource("GDScript_tpd5w")
 Actor = NodePath("../..")
+
+[node name="Uppercut" type="Node" parent="StateMachine" unique_id=264851494 node_paths=PackedStringArray("Actor", "HitBox")]
+script = SubResource("GDScript_8g4oa")
+UPPERCUT_VELOCITY = 600
+Actor = NodePath("../..")
+HitBox = NodePath("../../Body/HitBoxes/AerialUp/CollisionShape2D")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
 
 [node name="CrossTimer" type="Timer" parent="." unique_id=650838513]
 one_shot = true

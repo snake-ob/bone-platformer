@@ -22,3 +22,9 @@ SLIME calls up asking for available position (and reference to self)
 LEVEL checks tile map and tells the slime the available position it can go to
 LEVEL checks slime vs player position to keep it on the left/right side of player
 
+---
+April 15
+- Slime damages player
+- When health hits 0 - GAME OVER screen
+- Reload level
+- Add upper cut
