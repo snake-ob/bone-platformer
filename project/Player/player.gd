@@ -1,6 +1,8 @@
 extends CharacterBody2D
 class_name Player
 
+const DEBUG_STATE = "idle"
+
 @onready var StateMachine = $StateMachine
 @onready var Sprite = $Body/AnimatedSprite2D
 @onready var Body = $Body
@@ -56,7 +58,7 @@ var orientation_ready : bool:
 		
 
 func _ready():
-	StateMachine._set_state("idle")
+	StateMachine._set_state(DEBUG_STATE)
 	StateMachine.change_animation.connect(_on_change_animation)
 	crossTimer.wait_time = CROSS_READY_TIME
 
@@ -85,8 +87,6 @@ func _physics_process(delta):
 			current_tile = collision_tile
 	else:
 		tile_exited.emit()
-	
-	
 
 func _on_change_animation(new_animation):
 	Sprite.set_animation(new_animation)

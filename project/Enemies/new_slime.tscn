@@ -192,10 +192,17 @@ func _physics_update(delta):
 [sub_resource type="GDScript" id="GDScript_i63g1"]
 script/source = "extends State
 
+@export var hitbox : CollisionShape2D
+
 func _enter_state():
 	change_animation.emit(\"jump\")
 	actor.velocity.x += (actor.JUMP_LENGTH * actor.current_direction)
 	actor.velocity.y -= actor.JUMP_HEIGHT
+	
+	hitbox.set_disabled(false)
+	
+func _exit_state():
+	hitbox.set_disabled(true)
 
 func _physics_update(delta):
 	if actor.velocity.y >= 0:
@@ -278,8 +285,9 @@ script = SubResource("GDScript_djh1h")
 [node name="Load" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="9" unique_id=114111720]
 script = SubResource("GDScript_t34n4")
 
-[node name="Jump" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="10" unique_id=810284658]
+[node name="Jump" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="10" unique_id=810284658 node_paths=PackedStringArray("hitbox")]
 script = SubResource("GDScript_i63g1")
+hitbox = NodePath("../../HurtBox/CollisionShape2D")
 
 [node name="Timers" type="Node" parent="." index="6" unique_id=1422118767]
 

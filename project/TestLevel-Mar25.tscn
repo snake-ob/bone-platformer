@@ -157,8 +157,7 @@ func _catch_enemies(enemies: Array):
 script = SubResource("GDScript_xnb64")
 
 [node name="Player" parent="." unique_id=1304642200 instance=ExtResource("1_fepeq")]
-visible = false
-position = Vector2(176, -104)
+position = Vector2(216, -24)
 JUMP_FORCE = 100.0
 FRICTION = 50
 
@@ -180,4 +179,4 @@ tile_set = ExtResource("3_ujdt3")
 [node name="Enemies" type="Node" parent="." unique_id=1399081434]
 
 [node name="NewSlime" parent="Enemies" unique_id=475970655 instance=ExtResource("5_tnerh")]
-position = Vector2(240, -40)
+position = Vector2(112, 0)

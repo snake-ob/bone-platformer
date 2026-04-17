@@ -5,6 +5,8 @@
 [ext_resource type="PackedScene" uid="uid://bysbmq2osg5i2" path="res://State Machines/StateMachine.tscn" id="2_qm0nl"]
 [ext_resource type="Texture2D" uid="uid://bt76al0e22kov" path="res://Assets/Sprite Sheets/boxer-bonesly-Sheet.png" id="3_mstqf"]
 [ext_resource type="Texture2D" uid="uid://ba742jx585fok" path="res://Assets/Sprite Sheets/boxer-bonesly-Sheet-apr15.png" id="4_6ysni"]
+[ext_resource type="Texture2D" uid="uid://d2alqvgoyac8q" path="res://Assets/Sprite Sheets/boxer-bonesly-hurt.png" id="4_s1rgi"]
+[ext_resource type="Texture2D" uid="uid://bjbmrqk710kvf" path="res://Assets/Sprite Sheets/boxer-bonesly-1-2.png" id="4_vlldt"]
 [ext_resource type="Script" uid="uid://dekdrj2dp7q8i" path="res://Nodes/soft_collision.gd" id="5_8g4oa"]
 
 [sub_resource type="GDScript" id="GDScript_q5sgk"]
@@ -185,9 +187,13 @@ region = Rect2(720, 0, 30, 40)
 atlas = ExtResource("1_f501w")
 region = Rect2(750, 0, 30, 40)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_ch1sj"]
-atlas = ExtResource("1_f501w")
-region = Rect2(510, 0, 30, 40)
+[sub_resource type="AtlasTexture" id="AtlasTexture_5wa8t"]
+atlas = ExtResource("4_s1rgi")
+region = Rect2(60, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v0k0e"]
+atlas = ExtResource("4_s1rgi")
+region = Rect2(30, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jgx80"]
 atlas = ExtResource("1_f501w")
@@ -261,9 +267,13 @@ region = Rect2(270, 0, 30, 40)
 atlas = ExtResource("1_f501w")
 region = Rect2(300, 0, 30, 40)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_51080"]
-atlas = ExtResource("1_f501w")
-region = Rect2(330, 0, 30, 40)
+[sub_resource type="AtlasTexture" id="AtlasTexture_j23h2"]
+atlas = ExtResource("4_vlldt")
+region = Rect2(120, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0j2ni"]
+atlas = ExtResource("4_vlldt")
+region = Rect2(150, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_s1rgi"]
 atlas = ExtResource("4_6ysni")
@@ -341,11 +351,14 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_ch1sj")
+"texture": SubResource("AtlasTexture_5wa8t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v0k0e")
 }],
 "loop": true,
 "name": &"hurt",
-"speed": 5.0
+"speed": 7.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -421,19 +434,21 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_0o8hc")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_0o8hc")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_0o8hc")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_51080")
 }],
 "loop": false,
 "name": &"power_cross",
 "speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j23h2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0j2ni")
+}],
+"loop": false,
+"name": &"recover",
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -760,7 +775,16 @@ script/source = "extends State
 @export var FORWARD_FORCE = 100
 @export var FRICTION = 400
 
+var cross_timer : Timer
+
+func _ready():
+	cross_timer = Timer.new()
+	add_child(cross_timer)
+	cross_timer.one_shot = true
+	cross_timer.timeout.connect(_on_cross_timer)
+
 func _enter_state():
+	cross_timer.start(0.5)
 	HitBox.set_disabled(false)
 	if Actor:
 		Actor.velocity.x += (FORWARD_FORCE * Actor.current_direction)
@@ -768,14 +792,12 @@ func _enter_state():
 
 func _exit_state():
 	HitBox.set_disabled(true)
-	
-
-func _on_animated_sprite_2d_animation_finished():
-	change_state.emit(\"idle\")
 
 func _physics_update(delta):
 	Actor.velocity.x = move_toward(Actor.velocity.x, 0, FRICTION * delta)
 	
+func _on_cross_timer():
+	change_state.emit(\"crossrecover\")
 "
 
 [sub_resource type="GDScript" id="GDScript_ug7xa"]
@@ -786,16 +808,26 @@ script/source = "extends State
 @export var FORWARD_FORCE = 80
 @export var FRICTION = 400
 
+var hook_timer : Timer
+
+func _ready():
+	hook_timer = Timer.new()
+	add_child(hook_timer)
+	hook_timer.one_shot = true
+	hook_timer.timeout.connect(_on_hook_timeout)
+
 func _enter_state():
+	hook_timer.start(0.5)
 	HitBox.set_disabled(false)
 	if Actor:
 		Actor.velocity.x += (FORWARD_FORCE * Actor.current_direction)
 	change_animation.emit(\"hook\")
 
 func _exit_state():
+	hook_timer.stop()
 	HitBox.set_disabled(true)
 	
-func _on_animated_sprite_2d_animation_finished():
+func _on_hook_timeout():
 	change_state.emit(\"idle\")
 
 func _physics_update(delta):
@@ -836,7 +868,7 @@ script/source = "extends State
 
 func _enter_state():
 	HitBox.set_disabled(false)
-	change_animation.emit(\"up_aerial\")
+	#change_animation.emit(\"up_aerial\")
 	await get_tree().create_timer(Actor.CROSS_TIME).timeout
 	_on_aerial_finished()
 
@@ -939,7 +971,7 @@ func move_direction(delta, input):
 [sub_resource type="GDScript" id="GDScript_8g4oa"]
 script/source = "extends State
 
-@export var UPPERCUT_VELOCITY = 400
+const UPPERCUT_VELOCITY = 100
 
 @export var Actor : Node
 @export var HitBox : Node
@@ -963,7 +995,7 @@ func _enter_state():
 	#uppercut_timer.start(2)
 
 func _physics_update(delta):
-	if Actor.velocity.y >= 0:
+	if Actor.velocity.y > 0:
 		change_state.emit('fall')
 	apply_gravity(Actor, delta)
 
@@ -974,13 +1006,59 @@ func _exit_state():
 func _on_uppercut_finished():
 	if Actor.velocity.y !=0:
 		change_state.emit(\"fall\")
-	else:
-		change_state.emit(\"idle\")
+	#else:
+	#	change_state.emit(\"idle\")
+"
+
+[sub_resource type="GDScript" id="GDScript_vlldt"]
+script/source = "extends State
+
+@export var Actor : Node
+var recover_timer: Timer
+
+func _ready():
+	recover_timer = Timer.new()
+	add_child(recover_timer)
+	recover_timer.one_shot = true
+	recover_timer.timeout.connect(on_recover)
+
+func _enter_state():
+	recover_timer.start(0.25)
+	change_animation.emit(\"recover\")
+
+func _exit_state():
+	recover_timer.stop()
+
+func _physics_update(delta):
+	apply_gravity(Actor, delta)
+	apply_friction(Actor, delta)
+
+func on_recover():
+	change_state.emit('idle')
+"
+
+[sub_resource type="GDScript" id="GDScript_s1rgi"]
+script/source = "extends State
+
+@export var Actor: CharacterBody2D
+
+func _ready() -> void:
+	pass # Replace with function body.
+	
+func _enter_state():
+	change_animation.emit('hurt')
+
+func _physics_update(delta):
+	apply_gravity(Actor, delta)
+	apply_friction(Actor, delta)
 "
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6ysni"]
 radius = 6.0
 height = 16.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s1rgi"]
+size = Vector2(12, 20)
 
 [node name="Player" type="CharacterBody2D" unique_id=1517185507]
 position = Vector2(2.08165e-12, 2.08165e-12)
@@ -1093,7 +1171,9 @@ debug_color = Color(1, 0.34902, 0.423529, 0.545098)
 texture_filter = 1
 position = Vector2(3, -12)
 sprite_frames = SubResource("SpriteFrames_xnr8x")
-animation = &"cross"
+animation = &"hurt"
+autoplay = "hurt"
+frame_progress = 0.41355243
 
 [node name="FloorRay" type="RayCast2D" parent="Body" unique_id=1467467166]
 position = Vector2(-2.08165e-12, -10)
@@ -1178,9 +1258,18 @@ Actor = NodePath("../..")
 
 [node name="Uppercut" type="Node" parent="StateMachine" unique_id=264851494 node_paths=PackedStringArray("Actor", "HitBox")]
 script = SubResource("GDScript_8g4oa")
-UPPERCUT_VELOCITY = 600
 Actor = NodePath("../..")
 HitBox = NodePath("../../Body/HitBoxes/AerialUp/CollisionShape2D")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
+[node name="CrossRecover" type="Node" parent="StateMachine" unique_id=1748185365 node_paths=PackedStringArray("Actor")]
+script = SubResource("GDScript_vlldt")
+Actor = NodePath("../..")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
+[node name="Hurt" type="Node" parent="StateMachine" unique_id=1878872816 node_paths=PackedStringArray("Actor")]
+script = SubResource("GDScript_s1rgi")
+Actor = NodePath("../..")
 metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
 
 [node name="CrossTimer" type="Timer" parent="." unique_id=650838513]
@@ -1200,6 +1289,13 @@ metadata/_custom_type_script = "uid://dekdrj2dp7q8i"
 position = Vector2(-2.08165e-12, -6)
 shape = SubResource("CapsuleShape2D_6ysni")
 
+[node name="HurtBox" type="Area2D" parent="." unique_id=1189088165]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox" unique_id=789421601]
+position = Vector2(-2.08165e-12, -11)
+shape = SubResource("RectangleShape2D_s1rgi")
+debug_color = Color(0.8352941, 0.09803922, 0.20392157, 0.54509807)
+
 [connection signal="area_entered" from="Body/HitBoxes/AerialDown" to="Body/HitBoxes/AerialDown" method="_on_area_entered"]
 [connection signal="area_entered" from="Body/HitBoxes/AerialDown" to="StateMachine/DownAerial" method="_on_aerial_down_area_entered"]
 [connection signal="body_entered" from="Body/HitBoxes/AerialDown" to="Body/HitBoxes/AerialDown" method="_on_body_entered"]
@@ -1214,6 +1310,5 @@ shape = SubResource("CapsuleShape2D_6ysni")
 [connection signal="body_entered" from="Body/HitBoxes/Hook" to="Body/HitBoxes/Hook" method="_on_body_entered"]
 [connection signal="area_entered" from="Body/HitBoxes/CrouchJab" to="Body/HitBoxes/CrouchJab" method="_on_area_entered"]
 [connection signal="body_entered" from="Body/HitBoxes/CrouchJab" to="Body/HitBoxes/CrouchJab" method="_on_body_entered"]
-[connection signal="animation_finished" from="Body/AnimatedSprite2D" to="StateMachine/PowerCross" method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="timeout" from="CrossTimer" to="." method="_on_cross_timer_timeout"]
 [connection signal="timeout" from="OrientationTimer" to="." method="_on_orientation_timer_timeout"]
