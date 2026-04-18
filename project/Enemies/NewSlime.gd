@@ -11,7 +11,7 @@ const PREF_SLOT = 2
 var health : int
 
 var target_pos : Vector2
-var target_slot = 2
+var target_slot = 3
 var current_slot : int
 
 signal get_target_position(requester)
@@ -30,6 +30,13 @@ func _ready():
 	$DetectionZone.player_detected.connect(_player_detected)
 	$DetectionZone.player_lost.connect(_player_lost)
 	$StateMachine/Slotted.get_player_pos.connect(_player_pos_request)
+	$StateMachine/Land.disable_hitbox.connect(_on_disable_hitbox)
+	$StateMachine/Idle.disable_hitbox.connect(_on_disable_hitbox)
+	$StateMachine/Death.disable_hitbox.connect(_on_disable_hitbox)
+	$StateMachine/Stun.disable_hitbox.connect(_on_disable_hitbox)
+	$StateMachine/Jump.enable_hitbox.connect(_on_enable_hitbox)
+	_on_disable_hitbox()
+	
 	
 func _process(delta):
 	$DebugRay.target_pos = target_pos
@@ -60,3 +67,9 @@ func _set_state(new_state):
 
 func _player_pos_request(requester : Node):
 	get_player_pos.emit(requester)
+	
+func _on_disable_hitbox():
+	$Body/Hitbox/CollisionShape2D.set_disabled(true)
+	
+func _on_enable_hitbox():
+	$Body/Hitbox/CollisionShape2D.set_disabled(false)

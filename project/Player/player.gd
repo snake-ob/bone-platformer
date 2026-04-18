@@ -15,6 +15,7 @@ const DEBUG_STATE = "idle"
 signal tile_collided(collision_info: KinematicCollision2D)
 signal new_tile_entered(collision_tile, map_layer)
 signal tile_exited()
+signal player_died()
 
 const GRAVITY = 275.00
 const STRONG_GRAVITY = 400.00
@@ -30,6 +31,9 @@ const CROSS_READY_TIME = 0.15
 @export var FRICTION: int = 10
 
 var current_tile: Vector2i
+
+var max_health = 1
+var health
 
 var current_direction : int
 var new_direction: float:
@@ -61,6 +65,9 @@ func _ready():
 	StateMachine._set_state(DEBUG_STATE)
 	StateMachine.change_animation.connect(_on_change_animation)
 	crossTimer.wait_time = CROSS_READY_TIME
+	$HurtBox.take_hit.connect(_on_hurtbox_take_hit)
+	
+	health = max_health
 
 func set_state(state : String):
 	StateMachine._set_state(state)
@@ -105,3 +112,12 @@ func check_colliding(delta):
 	if softCollision.has_overlapping_areas():
 		#if current_state == "idle" || current_state == "chase":
 		velocity.x += softCollision.get_push_vector().x * delta * 150
+		
+func _on_hurtbox_take_hit(force, damage):
+	$StateMachine._set_state('hurt')
+	velocity += force
+	health -= damage
+	print(health)
+	
+	if health == 0:
+		player_died.emit()

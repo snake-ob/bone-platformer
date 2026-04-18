@@ -3,6 +3,8 @@ extends State
 @export var playerDetection : Node
 var death_time : Timer
 
+signal disable_hitbox()
+
 func _ready():
 	death_time = Timer.new()
 	add_child(death_time)
@@ -12,6 +14,7 @@ func _ready():
 func _enter_state():
 	change_animation.emit("death")
 	death_time.start(0.3)
+	disable_hitbox.emit()
 
 func _exit_state():
 	death_time.stop()

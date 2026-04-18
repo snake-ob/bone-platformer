@@ -6,6 +6,8 @@ extends State
 var direction
 var stun_timer : Timer
 
+signal disable_hitbox()
+
 func _ready():
 	stun_timer = Timer.new()
 	add_child(stun_timer)
@@ -17,6 +19,8 @@ func _enter_state():
 	change_animation.emit("stun")
 	actor.velocity = Vector2.ZERO
 	stun_timer.start(3.0)
+	disable_hitbox.emit()
+	
 
 func _exit_state():
 	stun_timer.stop()

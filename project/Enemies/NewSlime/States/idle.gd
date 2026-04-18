@@ -3,6 +3,8 @@ extends State
 var idle_timer : Timer
 var slot_timer : Timer
 
+signal disable_hitbox()
+
 func _ready():
 	idle_timer = Timer.new()
 	add_child(idle_timer)
@@ -19,6 +21,8 @@ func _enter_state():
 	var time_to_idle = randi_range(3,7)
 	idle_timer.start(time_to_idle)
 	slot_timer.start(0.5)
+	
+	disable_hitbox.emit()
 	
 	
 func _exit_state():

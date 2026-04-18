@@ -38,8 +38,8 @@ func _set_state(new_state : String):
 func _on_change_state(new_state : String):
 	if new_state in states:
 		_set_state(new_state)
-	print_rich("[color=yellow]Transition to: ", new_state, " from: ", current_state.name, "[/color]")
-	print_stack()
+	#print_rich("[color=yellow]Transition to: ", new_state, " from: ", current_state.name, "[/color]")
+	#print_stack()
 
 func _on_change_animation(new_animation : String):
 	change_animation.emit(new_animation)

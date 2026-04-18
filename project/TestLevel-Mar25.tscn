@@ -1,6 +1,7 @@
 [gd_scene format=4 uid="uid://cgbly3558llka"]
 
 [ext_resource type="PackedScene" uid="uid://b3265k8ebm0vp" path="res://Player/Player.tscn" id="1_fepeq"]
+[ext_resource type="PackedScene" uid="uid://cp3gsrjxk150t" path="res://DebugGameOver.tscn" id="1_tnerh"]
 [ext_resource type="Script" uid="uid://c3yqqfuapx6eu" path="res://HighlightedTiles.gd" id="2_ujdt3"]
 [ext_resource type="TileSet" uid="uid://cmfvulk7q7jpx" path="res://TestTileSet.tres" id="3_ujdt3"]
 [ext_resource type="PackedScene" uid="uid://c4wyehxyemlri" path="res://Enemies/new_slime.tscn" id="5_tnerh"]
@@ -11,10 +12,22 @@ script/source = "extends Node2D
 
 var current_player_tile
 var active_enemies : Array
+var death_timer : Timer
+var restart_timer: Timer
 
 func _ready() -> void:
+	Engine.time_scale = 1
+	death_timer = Timer.new()
+	add_child(death_timer)
+	death_timer.one_shot = true
+	death_timer.timeout.connect(_on_death_timer)
+	restart_timer = Timer.new()
+	add_child(restart_timer)
+	restart_timer.one_shot = true
+	restart_timer.timeout.connect(_on_restart_timer)
 	$Player.new_tile_entered.connect(_on_player_new_tile)
 	$QueueManager.slots_updated.connect(_on_slots_updated)
+	$Player.player_died.connect(_on_player_death)
 
 	for enemy in $Enemies.get_children():
 		enemy.player_range.connect(_on_player_range)
@@ -50,6 +63,21 @@ func sort_enemies_by_distance(enemy_array: Array):
 
 func _on_player_pos_request(requester):
 	requester._catch_player_pos($Player.global_position)
+
+func _on_player_death():
+	death_timer.start(1)
+	get_tree().paused = true
+
+func _on_death_timer():
+	restart_timer.start(0.6)
+
+	Engine.time_scale = 0.2
+	$GameOver.show()
+	get_tree().paused = false
+	
+func _on_restart_timer():
+	print(\"Game Reset\")
+	get_tree().reload_current_scene()
 "
 
 [sub_resource type="GDScript" id="GDScript_e6i1n"]
@@ -154,22 +182,27 @@ func _catch_enemies(enemies: Array):
 "
 
 [node name="LevelTest_Mar25" type="Node2D" unique_id=1451453980]
+process_mode = 3
 script = SubResource("GDScript_xnb64")
 
 [node name="Player" parent="." unique_id=1304642200 instance=ExtResource("1_fepeq")]
+process_mode = 1
 position = Vector2(216, -24)
 JUMP_FORCE = 100.0
 FRICTION = 50
 
 [node name="QueueManager" type="Node2D" parent="." unique_id=1050496794]
+process_mode = 1
 z_index = 1
 position = Vector2(88, -40)
 script = SubResource("GDScript_e6i1n")
 
 [node name="EnemyManager" type="Node" parent="." unique_id=746036016]
+process_mode = 1
 script = SubResource("GDScript_tnerh")
 
 [node name="Tilemap" type="Node2D" parent="." unique_id=964033396]
+process_mode = 1
 script = ExtResource("2_ujdt3")
 
 [node name="Ground" type="TileMapLayer" parent="Tilemap" unique_id=1029366396]
@@ -177,6 +210,11 @@ tile_map_data = PackedByteArray("AAAZAAsAAAAHAAUAAAAZAAoAAAAHAAQAAAAZAAkAAAAHAAQ
 tile_set = ExtResource("3_ujdt3")
 
 [node name="Enemies" type="Node" parent="." unique_id=1399081434]
+process_mode = 1
 
 [node name="NewSlime" parent="Enemies" unique_id=475970655 instance=ExtResource("5_tnerh")]
 position = Vector2(112, 0)
+collision_layer = 32
+
+[node name="GameOver" parent="." unique_id=1904985792 instance=ExtResource("1_tnerh")]
+visible = false
