@@ -1,0 +1,526 @@
+[gd_scene format=3 uid="uid://r3rh6k4771r8"]
+
+[ext_resource type="PackedScene" uid="uid://4m8ct6db1db1" path="res://Enemies/Enemy.tscn" id="1_2bivj"]
+[ext_resource type="Texture2D" uid="uid://bsnb8t4b6wsd0" path="res://Assets/Sprite Sheets/little-ghost-sheet.png" id="2_tjy87"]
+[ext_resource type="Script" uid="uid://byq0nc5vmqal" path="res://Enemies/wander.gd" id="3_tjy87"]
+[ext_resource type="Script" uid="uid://crehrm2df7oye" path="res://Enemies/stunned.gd" id="4_x5eyo"]
+[ext_resource type="Script" uid="uid://tl6iy2fdy1hq" path="res://Enemies/recover.gd" id="5_iotu6"]
+[ext_resource type="Script" uid="uid://ddpsdxn4q67fp" path="res://Enemies/death.gd" id="6_lwuue"]
+
+[sub_resource type="GDScript" id="GDScript_2bivj"]
+script/source = "extends Enemy
+
+const SPEED = 20.0
+const ACCELLERATION = 100.0
+const JUMP_HEIGHT = 130.0
+const JUMP_LENGTH = 50.0
+const GRAVITY = 275.0
+const FRICTION = 50.0
+const MAX_HEALTH = 10
+const PREF_SLOT = 2
+var health : int
+
+var target_pos : Vector2
+var target_slot = 1
+var current_slot : int
+
+signal get_target_position(requester)
+signal player_range(enemy)
+signal player_lost(enemy)
+signal get_player_pos(enemy)
+
+func _on_hurt_box_take_hit(force, damage):
+	velocity += force
+	
+func _ready():
+	# Run the parent's setup first
+	super()
+	StateMachine._set_state(\"idle\")
+	health = MAX_HEALTH
+	$DetectionZone.player_detected.connect(_player_detected)
+	$DetectionZone.player_lost.connect(_player_lost)
+	#$StateMachine/Slotted.get_player_pos.connect(_player_pos_request)
+	#$StateMachine/Land.disable_hitbox.connect(_on_disable_hitbox)
+	$StateMachine/Idle.disable_hitbox.connect(_on_disable_hitbox)
+	#$StateMachine/Death.disable_hitbox.connect(_on_disable_hitbox)
+	#$StateMachine/Stun.disable_hitbox.connect(_on_disable_hitbox)
+	#$StateMachine/Jump.enable_hitbox.connect(_on_enable_hitbox)
+	_on_disable_hitbox()
+	
+	
+func _process(delta):
+	$DebugRay.target_pos = target_pos
+	$DebugRay.start_pos = global_position
+	pass
+	
+func _player_detected():
+	in_player_range = true
+	player_range.emit(self)
+
+func _player_lost():
+	in_player_range = false
+	player_lost.emit(self)
+	
+func _on_hurt_box_take_stun(force: Variant, damage: Variant) -> void:
+	StateMachine._set_state(\"stun\")
+
+func _on_hurt_box_take_slam(force:Variant, damage: Variant) -> void:
+	velocity += force * 2
+	if $StateMachine.current_state.name == \"Stun\":
+		StateMachine._set_state(\"death\")
+		
+func _set_target_position(new_pos):
+	target_pos = new_pos
+	
+func _set_state(new_state):
+	$StateMachine._set_state(new_state)
+
+func _player_pos_request(requester : Node):
+	get_player_pos.emit(requester)
+	
+func _on_disable_hitbox():
+	$Body/Hitbox/CollisionShape2D.set_disabled(true)
+	
+func _on_enable_hitbox():
+	$Body/Hitbox/CollisionShape2D.set_disabled(false)
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2bivj"]
+size = Vector2(12, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yda8n"]
+atlas = ExtResource("2_tjy87")
+region = Rect2(0, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mj4a2"]
+atlas = ExtResource("2_tjy87")
+region = Rect2(30, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x5eyo"]
+atlas = ExtResource("2_tjy87")
+region = Rect2(60, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iotu6"]
+atlas = ExtResource("2_tjy87")
+region = Rect2(90, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lwuue"]
+atlas = ExtResource("2_tjy87")
+region = Rect2(120, 0, 30, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sranb"]
+atlas = ExtResource("2_tjy87")
+region = Rect2(150, 0, 30, 40)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_mi5c5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yda8n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mj4a2")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x5eyo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iotu6")
+}],
+"loop": true,
+"name": &"run",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iotu6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lwuue")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sranb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lwuue")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[sub_resource type="GDScript" id="GDScript_mj4a2"]
+script/source = "extends Area2D
+
+@export var Actor : Node
+const POWER = 200
+const DAMAGE = 1
+
+func _on_body_entered(body):
+	var direction = (body.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if body is RigidBody2D:
+		body.interacted(force)
+	elif body is Enemy:
+		body.apply_knockback()
+
+func _on_area_entered(area):
+	var direction = (area.global_position - Actor.global_position).normalized()
+	var force = direction * POWER
+	if area is HurtBox:
+		area.taken_hit(force, DAMAGE)
+		print(\"Flag 2\")
+	print(\"Flag 1\")
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_x5eyo"]
+radius = 6.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tjy87"]
+size = Vector2(9, 9)
+
+[sub_resource type="GDScript" id="GDScript_tjy87"]
+resource_name = "detectionzone"
+script/source = "extends Area2D
+
+signal player_detected()
+signal player_lost()
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	body_entered.connect(_on_body_entered)
+	body_exited.connect(_on_body_exited)
+
+func _on_body_entered(body):
+	if body is Player:
+		player_detected.emit()
+
+func _on_body_exited(body):
+	if body is Player:
+		player_lost.emit()
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yda8n"]
+size = Vector2(67.99936, 178.00024)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2bivj"]
+radius = 4.0
+
+[sub_resource type="GDScript" id="GDScript_yda8n"]
+script/source = "extends State
+
+var idle_timer : Timer
+var slot_timer : Timer
+
+signal disable_hitbox()
+
+func _ready():
+	idle_timer = Timer.new()
+	add_child(idle_timer)
+	idle_timer.one_shot = true
+	idle_timer.timeout.connect(_idle_timeout)
+	
+	slot_timer = Timer.new()
+	add_child(slot_timer)
+	slot_timer.timeout.connect(_slot_timeout)
+
+func _enter_state():
+	change_animation.emit(\"idle\")
+	actor.velocity = Vector2.ZERO
+	var time_to_idle = randi_range(3,7)
+	idle_timer.start(time_to_idle)
+	slot_timer.start(0.5)
+	
+	disable_hitbox.emit()
+	
+	
+func _exit_state():
+	idle_timer.stop()
+	slot_timer.stop()
+
+func _physics_update(delta):
+	apply_gravity(actor, delta)
+	check_falling()
+	apply_friction(actor, delta)
+
+func check_falling():
+	if ! actor.is_on_floor():
+		change_state.emit('fall')
+
+func _idle_timeout():
+	if actor.in_player_range:
+		change_state.emit('slotting')
+	else:
+		change_state.emit('wander')
+		
+func _slot_timeout():
+	if actor.in_player_range:
+		change_state.emit('slotting')
+"
+
+[sub_resource type="GDScript" id="GDScript_sranb"]
+script/source = "extends State
+
+var direction
+var target_pos
+var current_pos
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _enter_state():
+	change_animation.emit(\"walk\")
+	target_pos = actor.target_pos
+	
+func _exit_state():
+	pass
+	
+func _physics_update(delta):
+	target_pos = actor.target_pos
+	current_pos = actor.global_position
+	direction = current_pos.direction_to(actor.target_pos)
+	actor.new_direction = direction.x
+
+	current_pos = actor.global_position
+	apply_gravity(actor, delta)
+
+	var distance = abs(current_pos.x - target_pos.x)
+
+	if distance > 1.0:
+		var target_velocity = direction * actor.SPEED
+		actor.velocity = actor.velocity.move_toward(target_velocity, actor.ACCELLERATION * delta)
+	else:
+		change_state.emit('slotted')
+	
+	actor.move_and_slide()
+"
+
+[sub_resource type="GDScript" id="GDScript_mi5c5"]
+script/source = "extends State
+
+var direction
+var target_pos
+var current_pos
+var player_pos
+
+var jump_timer : Timer
+
+
+signal get_player_pos(requester: Node)
+
+func _ready():
+	jump_timer = Timer.new()
+	add_child(jump_timer)
+	jump_timer.timeout.connect(try_attack)
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _enter_state():
+	get_player_pos.emit(self)
+	change_animation.emit(\"idle\")
+	target_pos = actor.target_pos
+	current_pos = actor.global_position
+	direction = current_pos.direction_to(player_pos)
+	actor.new_direction = direction.x
+	
+	jump_timer.start(2)
+	
+func _exit_state():
+	jump_timer.stop()
+	
+func _physics_update(delta):
+	apply_friction(actor, delta)
+	apply_gravity(actor, delta)
+	
+	current_pos = actor.global_position
+
+	var distance = abs(current_pos.x - actor.target_pos.x)
+	
+	if !actor.in_player_range:
+		change_state.emit('idle')
+	elif distance > 5.0:
+		change_state.emit('slotting')
+	
+	actor.move_and_slide()
+
+func _catch_player_pos(new_pos):
+	player_pos = new_pos
+
+func try_attack():
+	if actor.target_slot == actor.target_slot:
+		change_state.emit('jump')
+"
+
+[sub_resource type="GDScript" id="GDScript_d3ij5"]
+script/source = "extends State
+
+func _enter_state():
+	change_animation.emit(\"fall\")
+	
+func _physics_update(delta):
+	if actor.is_on_floor():
+		change_state.emit(\"land\")
+	apply_gravity(actor, delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_65eol"]
+script/source = "extends State
+
+const LAND_TIME = 0.2
+var land_timer : Timer
+@export var Actor : Node2D
+
+signal disable_hitbox()
+
+func _ready():
+	land_timer = Timer.new()
+	add_child(land_timer)
+	land_timer.one_shot = true
+	land_timer.timeout.connect(_on_land)
+
+func _enter_state():
+	change_animation.emit(\"land\")
+	disable_hitbox.emit()
+	actor.velocity = Vector2.ZERO
+	land_timer.start(LAND_TIME)
+	
+func _exit_state():
+	land_timer.stop()
+
+func _on_land():
+	change_state.emit(\"idle\")
+"
+
+[sub_resource type="GDScript" id="GDScript_wj2sv"]
+script/source = "extends State
+
+func _enter_state():
+	change_animation.emit(\"load\")
+	actor.velocity = Vector2.ZERO
+	var load_timer = randf_range(0.2, 1.0)
+	await get_tree().create_timer(load_timer).timeout
+	change_state.emit(\"jump\")
+
+func _physics_update(delta):
+	apply_gravity(actor, delta)
+	apply_friction(actor, delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_aq2f5"]
+script/source = "extends State
+
+@export var hitbox : CollisionShape2D
+signal enable_hitbox()
+
+func _enter_state():
+	change_animation.emit(\"jump\")
+	actor.velocity.x += (actor.JUMP_LENGTH * actor.current_direction)
+	actor.velocity.y -= actor.JUMP_HEIGHT
+	
+	enable_hitbox.emit()
+
+
+func _physics_update(delta):
+	if actor.velocity.y >= 0:
+		change_state.emit(\"fall\")
+	apply_gravity(actor, delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_x5eyo"]
+script/source = "extends RayCast2D
+
+@export var actor: CharacterBody2D
+var target_pos : Vector2
+var start_pos : Vector2
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	global_position = start_pos
+	target_position = target_pos - start_pos
+"
+
+[node name="LittleGhost" unique_id=736844394 instance=ExtResource("1_2bivj")]
+collision_layer = 4
+script = SubResource("GDScript_2bivj")
+
+[node name="CollisionShape2D" parent="." index="0" unique_id=1707792468]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_2bivj")
+
+[node name="AnimatedSprite2D" parent="Body" parent_id_path=PackedInt32Array(1363847246) index="0" unique_id=581613343]
+position = Vector2(3, -6)
+sprite_frames = SubResource("SpriteFrames_mi5c5")
+animation = &"walk"
+
+[node name="Hitbox" type="Area2D" parent="Body" parent_id_path=PackedInt32Array(1363847246) index="1" unique_id=439453900]
+collision_layer = 0
+collision_mask = 256
+script = SubResource("GDScript_mj4a2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/Hitbox" index="0" unique_id=447465624]
+shape = SubResource("CircleShape2D_x5eyo")
+
+[node name="CollisionShape2D" parent="HurtBox" parent_id_path=PackedInt32Array(1438169615) index="0"]
+position = Vector2(0.5, -0.5)
+shape = SubResource("RectangleShape2D_tjy87")
+debug_color = Color(1, 0.12941177, 0.21960784, 0.54509807)
+
+[node name="DetectionZone" parent="." index="3" unique_id=1656946126]
+script = SubResource("GDScript_tjy87")
+
+[node name="CollisionShape2D" parent="DetectionZone" index="0" unique_id=1904000838]
+position = Vector2(-1, 0)
+shape = SubResource("RectangleShape2D_yda8n")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="SoftCollision" parent_id_path=PackedInt32Array(2003785463) index="1" unique_id=1510925972]
+shape = SubResource("CircleShape2D_2bivj")
+debug_color = Color(1, 1, 0, 0.54509807)
+
+[node name="Idle" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="0" unique_id=152137917]
+script = SubResource("GDScript_yda8n")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
+[node name="Wander" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="1" unique_id=1975416007]
+script = ExtResource("3_tjy87")
+
+[node name="Stun" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="2" unique_id=525184175]
+script = ExtResource("4_x5eyo")
+
+[node name="Recover" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="3" unique_id=1689047695]
+script = ExtResource("5_iotu6")
+
+[node name="Death" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="4" unique_id=1701367028]
+script = ExtResource("6_lwuue")
+
+[node name="Slotting" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="5" unique_id=864754503]
+script = SubResource("GDScript_sranb")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
+[node name="Slotted" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="6" unique_id=550900417]
+script = SubResource("GDScript_mi5c5")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
+[node name="Fall" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="7" unique_id=192896140]
+script = SubResource("GDScript_d3ij5")
+
+[node name="Land" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="8" unique_id=521222384]
+script = SubResource("GDScript_65eol")
+
+[node name="Load" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="9" unique_id=2059724111]
+script = SubResource("GDScript_wj2sv")
+
+[node name="Jump" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(1134773874) index="10" unique_id=88435729]
+script = SubResource("GDScript_aq2f5")
+
+[node name="DebugRay" type="RayCast2D" parent="." index="6" unique_id=935322539]
+script = SubResource("GDScript_x5eyo")
+
+[connection signal="area_entered" from="Body/Hitbox" to="Body/Hitbox" method="_on_area_entered"]
+
+[editable path="HurtBox"]

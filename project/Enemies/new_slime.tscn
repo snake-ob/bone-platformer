@@ -197,11 +197,8 @@ func _enter_state():
 	
 func _exit_state():
 	land_timer.stop()
-	
 
 func _on_land():
-	actor.ready_to_chase = false
-	actor.ready_to_attack = false
 	change_state.emit(\"idle\")
 "
 

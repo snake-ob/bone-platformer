@@ -1,5 +1,5 @@
 extends Area2D
-class_name HurtBox
+class_name LHurtBox
 
 signal take_hit(force, damage)
 signal take_stun(force, damage)

@@ -1,298 +1,155 @@
-[gd_scene format=3 uid="uid://b3265k8ebm0vp"]
+[gd_scene format=3 uid="uid://72w20oly0jvi"]
 
-[ext_resource type="Script" uid="uid://d2kuh81xmfn0j" path="res://Player/player.gd" id="1_34fy8"]
-[ext_resource type="Texture2D" uid="uid://dj8635lmd5oyn" path="res://Assets/Sprite Sheets/boxer-spritesheet.png" id="1_f501w"]
-[ext_resource type="PackedScene" uid="uid://bysbmq2osg5i2" path="res://State Machines/StateMachine.tscn" id="2_qm0nl"]
-[ext_resource type="Texture2D" uid="uid://bt76al0e22kov" path="res://Assets/Sprite Sheets/boxer-bonesly-Sheet.png" id="3_mstqf"]
-[ext_resource type="Texture2D" uid="uid://ba742jx585fok" path="res://Assets/Sprite Sheets/boxer-bonesly-Sheet-apr15.png" id="4_6ysni"]
-[ext_resource type="Texture2D" uid="uid://d2alqvgoyac8q" path="res://Assets/Sprite Sheets/boxer-bonesly-hurt.png" id="4_s1rgi"]
-[ext_resource type="Texture2D" uid="uid://bjbmrqk710kvf" path="res://Assets/Sprite Sheets/boxer-bonesly-1-2.png" id="4_vlldt"]
-[ext_resource type="Script" uid="uid://dekdrj2dp7q8i" path="res://Nodes/soft_collision.gd" id="5_8g4oa"]
+[ext_resource type="Script" uid="uid://d2kuh81xmfn0j" path="res://Player/player.gd" id="1_ihqaa"]
+[ext_resource type="Texture2D" uid="uid://dj8635lmd5oyn" path="res://Assets/Sprite Sheets/boxer-spritesheet.png" id="2_lqrqf"]
+[ext_resource type="Texture2D" uid="uid://bt76al0e22kov" path="res://Assets/Sprite Sheets/boxer-bonesly-Sheet.png" id="3_4dofm"]
+[ext_resource type="Script" uid="uid://dcyangu83tm15" path="res://v2/common/components/combat/hitbox.gd" id="3_mm1cx"]
+[ext_resource type="Resource" uid="uid://ytnp0xbikwlj" path="res://v2/common/components/combat/punch data/jabdata.tres" id="4_k77bq"]
+[ext_resource type="Texture2D" uid="uid://d2alqvgoyac8q" path="res://Assets/Sprite Sheets/boxer-bonesly-hurt.png" id="4_mm1cx"]
+[ext_resource type="Texture2D" uid="uid://bjbmrqk710kvf" path="res://Assets/Sprite Sheets/boxer-bonesly-1-2.png" id="5_k77bq"]
+[ext_resource type="Texture2D" uid="uid://ba742jx585fok" path="res://Assets/Sprite Sheets/boxer-bonesly-Sheet-apr15.png" id="6_7pdyy"]
+[ext_resource type="PackedScene" uid="uid://bysbmq2osg5i2" path="res://State Machines/StateMachine.tscn" id="7_1te0d"]
+[ext_resource type="PackedScene" uid="uid://dlopn7nqxt3l5" path="res://v2/common/components/combat/HurtBox.tscn" id="7_mm1cx"]
+[ext_resource type="Script" uid="uid://dekdrj2dp7q8i" path="res://Nodes/soft_collision.gd" id="8_0061e"]
+[ext_resource type="PackedScene" uid="uid://cg4wm8k107u7h" path="res://v2/common/components/Stats.tscn" id="12_k77bq"]
 
-[sub_resource type="GDScript" id="GDScript_q5sgk"]
-script/source = "extends Area2D
-
-@export var Actor : Node
-const POWER = 100
-const DAMAGE = 3
-
-func _on_body_entered(body):
-	var direction = (body.global_position - Actor.global_position).normalized()
-	var force = direction * POWER
-	if body is RigidBody2D:
-		body.interacted(force)
-	elif body is Enemy:
-		body.apply_knockback()
-
-func _on_area_entered(area):
-	var direction = (area.global_position - Actor.global_position).normalized()
-	var force = direction * POWER
-	if area is HurtBox:
-		area.taken_hit(force, DAMAGE)
-"
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_n2o1t"]
-size = Vector2(7, 15)
-
-[sub_resource type="GDScript" id="GDScript_26onm"]
-script/source = "extends Area2D
-
-@export var Actor : Node
-const POWER = 20
-const DAMAGE = 3
-
-func _on_body_entered(body):
-	var direction = (body.global_position - Actor.global_position).normalized()
-	var force = direction * POWER
-	if body is RigidBody2D:
-		body.interacted(force)
-	elif body is Enemy:
-		body.apply_knockback()
-
-func _on_area_entered(area):
-	var direction = (area.global_position - Actor.global_position).normalized()
-	var force = direction * POWER
-	if area is HurtBox:
-		area.taken_hit(force, DAMAGE)
-"
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_2hyr6"]
-size = Vector2(14, 8)
-
-[sub_resource type="GDScript" id="GDScript_6taqn"]
-script/source = "extends Area2D
-
-@export var Actor : Node
-const POWER = 30
-const DAMAGE = 3
-
-func _on_body_entered(body):
-	var direction = (body.global_position - Actor.global_position).normalized()
-	var force = direction * POWER
-	if body is RigidBody2D:
-		body.interacted(force)
-	elif body is Enemy:
-		body.apply_knockback()
-
-func _on_area_entered(area):
-	var direction = (area.global_position - Actor.global_position).normalized()
-	var force = direction * POWER
-	if area is HurtBox:
-		area.taken_hit(force, DAMAGE)
-"
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_0vigf"]
-size = Vector2(17, 7)
-
-[sub_resource type="GDScript" id="GDScript_u32uk"]
-script/source = "extends Area2D
-
-@export var Actor : Node
-const POWER = 100
-const DAMAGE = 3
-
-func _on_body_entered(body):
-	var direction = (body.global_position - Actor.global_position).normalized()
-	var force = direction * POWER
-	if body is RigidBody2D:
-		body.interacted(force)
-	elif body is Enemy:
-		body.apply_knockback()
-
-func _on_area_entered(area):
-	var direction = (area.global_position - Actor.global_position).normalized()
-	var force = direction * POWER
-	if area is HurtBox:
-		area.taken_slam(force, DAMAGE)
-"
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_6fb6j"]
-size = Vector2(15.5, 10)
-
-[sub_resource type="GDScript" id="GDScript_ll5as"]
-script/source = "extends Area2D
-
-@export var Actor : Node
-const POWER = 5
-const DAMAGE = 3
-
-func _on_body_entered(body):
-	var direction = (body.global_position - Actor.global_position).normalized()
-	var force = direction * POWER
-	if body is RigidBody2D:
-		body.interacted(force)
-	elif body is Enemy:
-		body.apply_knockback()
-
-func _on_area_entered(area):
-	var direction = (area.global_position - Actor.global_position).normalized()
-	var force = direction * 2
-	if area is HurtBox:
-		area.taken_stun(force, DAMAGE)
-"
-
-[sub_resource type="GDScript" id="GDScript_ixxin"]
-script/source = "extends Area2D
-
-@export var Actor : Node
-const POWER = 20
-const DAMAGE = 3
-
-func _on_body_entered(body):
-	var direction = (body.global_position - Actor.global_position).normalized()
-	var force = direction * POWER
-	if body is RigidBody2D:
-		body.interacted(force)
-	elif body is Enemy:
-		body.apply_knockback()
-
-func _on_area_entered(area):
-	var direction = (area.global_position - Actor.global_position).normalized()
-	var force = direction * POWER
-	if area is HurtBox:
-		area.taken_hit(force, DAMAGE)
-"
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_yml3j"]
-size = Vector2(15.5, 16)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_nf6ms"]
-size = Vector2(15, 21)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e26c0"]
+size = Vector2(14.5, 22)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_q557b"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(180, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_j1flq"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(30, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_yb5gu"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(60, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mbsus"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(1020, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_elqnn"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(690, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_yb0vl"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(720, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_llb23"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(750, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_5wa8t"]
-atlas = ExtResource("4_s1rgi")
+atlas = ExtResource("4_mm1cx")
 region = Rect2(60, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v0k0e"]
-atlas = ExtResource("4_s1rgi")
+atlas = ExtResource("4_mm1cx")
 region = Rect2(30, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jgx80"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(0, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_x6t0q"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(0, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jaxkp"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(30, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_427g8"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(60, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_c5edf"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(90, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0cu2j"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(120, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_d2on1"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(150, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_w6j0e"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(180, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pndgh"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(210, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_s1wgv"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(240, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_5unv2"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(120, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jmu3n"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(360, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_403vs"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(1020, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1tv2g"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(840, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fvbnp"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(870, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_vfugl"]
-atlas = ExtResource("3_mstqf")
+atlas = ExtResource("3_4dofm")
 region = Rect2(900, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_xppde"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(270, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0o8hc"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(300, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_j23h2"]
-atlas = ExtResource("4_vlldt")
+atlas = ExtResource("5_k77bq")
 region = Rect2(120, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0j2ni"]
-atlas = ExtResource("4_vlldt")
+atlas = ExtResource("5_k77bq")
 region = Rect2(150, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_s1rgi"]
-atlas = ExtResource("4_6ysni")
+atlas = ExtResource("6_7pdyy")
 region = Rect2(570, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7454o"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(570, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gqjlt"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(600, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_utsve"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(630, 0, 30, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r4sgt"]
-atlas = ExtResource("1_f501w")
+atlas = ExtResource("2_lqrqf")
 region = Rect2(660, 0, 30, 40)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_xnr8x"]
@@ -481,8 +338,614 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_e26c0"]
-size = Vector2(14.5, 22)
+[sub_resource type="Animation" id="Animation_mm1cx"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.0009999999),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [&"cross", &"idle"]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../Combat/HitBoxes/Cross:monitoring")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../Combat/HitBoxes/Jab:monitoring")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("../Combat/HitBoxes/PowerCross:monitoring")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("../Combat/HitBoxes/Hook:monitoring")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("../Combat/HitBoxes/CrouchJab:monitoring")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("../Combat/HitBoxes/UpperCut:monitoring")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_7pdyy"]
+resource_name = "cross"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"cross"]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../Combat/HitBoxes/Cross:monitoring")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_1te0d"]
+resource_name = "crouch"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"crouch"]
+}
+
+[sub_resource type="Animation" id="Animation_0061e"]
+resource_name = "crouchjab"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"crouch_jab"]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../Combat/HitBoxes/CrouchJab:monitoring")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_7atpg"]
+resource_name = "downaerial"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"down_aerial"]
+}
+
+[sub_resource type="Animation" id="Animation_pvyrk"]
+resource_name = "hook"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [0, 2, 4]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"hook"]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../Combat/HitBoxes/Hook:monitoring")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.2516748),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_cgnby"]
+resource_name = "hurt"
+loop_mode = 2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4655332),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"hurt"]
+}
+
+[sub_resource type="Animation" id="Animation_c0dq5"]
+resource_name = "idle"
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.033333335, 0.06666667, 0.10000001, 0.13333334),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 3, 4, 8, 9]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"idle"]
+}
+
+[sub_resource type="Animation" id="Animation_ou68c"]
+resource_name = "jab"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"jab"]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../Combat/HitBoxes/Jab:monitoring")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_qa43x"]
+resource_name = "jump"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"jump"]
+}
+
+[sub_resource type="Animation" id="Animation_k0edx"]
+resource_name = "pogo"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.033333335),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [1, 2]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"pogo"]
+}
+
+[sub_resource type="Animation" id="Animation_k77bq"]
+resource_name = "powercross"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"power_cross"]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../Combat/HitBoxes/PowerCross:monitoring")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.41858867),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_yt74w"]
+resource_name = "uppercut"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"uppercut"]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../Combat/HitBoxes/UpperCut:monitoring")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_ferd2"]
+resource_name = "walk"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.033333335, 0.06666667),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [0, 1, 2]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"walk"]
+}
+
+[sub_resource type="Animation" id="Animation_dcxbd"]
+resource_name = "wallslide"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"wallslide"]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_7pdyy"]
+_data = {
+&"RESET": SubResource("Animation_mm1cx"),
+&"cross": SubResource("Animation_7pdyy"),
+&"crouch": SubResource("Animation_1te0d"),
+&"crouchjab": SubResource("Animation_0061e"),
+&"downaerial": SubResource("Animation_7atpg"),
+&"hook": SubResource("Animation_pvyrk"),
+&"hurt": SubResource("Animation_cgnby"),
+&"idle": SubResource("Animation_c0dq5"),
+&"jab": SubResource("Animation_ou68c"),
+&"jump": SubResource("Animation_qa43x"),
+&"pogo": SubResource("Animation_k0edx"),
+&"powercross": SubResource("Animation_k77bq"),
+&"uppercut": SubResource("Animation_yt74w"),
+&"walk": SubResource("Animation_ferd2"),
+&"wallslide": SubResource("Animation_dcxbd")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mm1cx"]
+size = Vector2(8, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n2o1t"]
+size = Vector2(7, 15)
+
+[sub_resource type="GDScript" id="GDScript_ihqaa"]
+script/source = "extends CollisionShape2D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2hyr6"]
+size = Vector2(14, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0vigf"]
+size = Vector2(17, 7)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6fb6j"]
+size = Vector2(15.5, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yml3j"]
+size = Vector2(15.5, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nf6ms"]
+size = Vector2(15, 21)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6ysni"]
+radius = 6.0
+height = 16.0
 
 [sub_resource type="GDScript" id="GDScript_holk3"]
 script/source = "extends State
@@ -1069,143 +1532,156 @@ func _on_hurt_timer():
 	change_state.emit('idle')
 "
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6ysni"]
-radius = 6.0
-height = 16.0
-
-[sub_resource type="GDScript" id="GDScript_j23h2"]
-script/source = "extends HurtBox
-"
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_s1rgi"]
-size = Vector2(10, 20)
-
 [node name="Player" type="CharacterBody2D" unique_id=1517185507]
 position = Vector2(2.08165e-12, 2.08165e-12)
 collision_layer = 2
-script = ExtResource("1_34fy8")
-
-[node name="WallDetection" type="Node2D" parent="." unique_id=254630862]
-
-[node name="RayCastLeft" type="RayCast2D" parent="WallDetection" unique_id=2091866735]
-position = Vector2(-2.08165e-12, -11)
-rotation = 1.5708
-target_position = Vector2(0, 9)
-hit_from_inside = true
-
-[node name="RayCastRight" type="RayCast2D" parent="WallDetection" unique_id=2051910522]
-position = Vector2(-2.08165e-12, -11)
-rotation = -1.5708
-target_position = Vector2(-9.53674e-07, 11)
-hit_from_inside = true
-
-[node name="Body" type="Node2D" parent="." unique_id=1931603738]
-
-[node name="HitBoxes" type="Node2D" parent="Body" unique_id=1315800802]
-position = Vector2(3, 0)
-
-[node name="AerialDown" type="Area2D" parent="Body/HitBoxes" unique_id=178237681 node_paths=PackedStringArray("Actor")]
-collision_layer = 4
-collision_mask = 24
-script = SubResource("GDScript_q5sgk")
-Actor = NodePath("../../..")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/AerialDown" unique_id=509632339]
-position = Vector2(-0.5, -0.5)
-shape = SubResource("RectangleShape2D_n2o1t")
-disabled = true
-debug_color = Color(1, 0.34902, 0.423529, 0.545098)
-
-[node name="Jab" type="Area2D" parent="Body/HitBoxes" unique_id=1256578608 node_paths=PackedStringArray("Actor")]
-collision_layer = 4
-collision_mask = 24
-script = SubResource("GDScript_26onm")
-Actor = NodePath("../../..")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/Jab" unique_id=1352841504]
-position = Vector2(5, -12)
-shape = SubResource("RectangleShape2D_2hyr6")
-disabled = true
-debug_color = Color(1, 0.34902, 0.423529, 0.545098)
-
-[node name="Cross" type="Area2D" parent="Body/HitBoxes" unique_id=1714319355 node_paths=PackedStringArray("Actor")]
-collision_layer = 4
-collision_mask = 24
-script = SubResource("GDScript_6taqn")
-Actor = NodePath("../../..")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/Cross" unique_id=18633553]
-position = Vector2(5.5, -12.5)
-shape = SubResource("RectangleShape2D_0vigf")
-disabled = true
-debug_color = Color(1, 0.34902, 0.423529, 0.545098)
-
-[node name="PowerCross" type="Area2D" parent="Body/HitBoxes" unique_id=1991690144 node_paths=PackedStringArray("Actor")]
-collision_layer = 4
-collision_mask = 24
-script = SubResource("GDScript_u32uk")
-Actor = NodePath("../../..")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/PowerCross" unique_id=327625872]
-position = Vector2(7.5, -13)
-shape = SubResource("RectangleShape2D_6fb6j")
-disabled = true
-debug_color = Color(1, 0.34902, 0.423529, 0.545098)
-
-[node name="Hook" type="Area2D" parent="Body/HitBoxes" unique_id=1646411215 node_paths=PackedStringArray("Actor")]
-collision_layer = 4
-collision_mask = 24
-script = SubResource("GDScript_ll5as")
-Actor = NodePath("../../..")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/Hook" unique_id=811721205]
-position = Vector2(8.25, -13)
-shape = SubResource("RectangleShape2D_6fb6j")
-disabled = true
-debug_color = Color(1, 0.34902, 0.423529, 0.545098)
-
-[node name="CrouchJab" type="Area2D" parent="Body/HitBoxes" unique_id=250688119 node_paths=PackedStringArray("Actor")]
-collision_layer = 4
-collision_mask = 24
-script = SubResource("GDScript_ixxin")
-Actor = NodePath("../../..")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/CrouchJab" unique_id=858043391]
-position = Vector2(5.25, -8)
-shape = SubResource("RectangleShape2D_yml3j")
-disabled = true
-debug_color = Color(1, 0.34902, 0.423529, 0.545098)
-
-[node name="AerialUp" type="Area2D" parent="Body/HitBoxes" unique_id=1359103086]
-position = Vector2(0, -2.08165e-12)
-collision_layer = 4
-collision_mask = 10
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/AerialUp" unique_id=590240720]
-position = Vector2(-0.5, -23.5)
-shape = SubResource("RectangleShape2D_nf6ms")
-disabled = true
-debug_color = Color(1, 0.34902, 0.423529, 0.545098)
-
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Body" unique_id=1480093987]
-texture_filter = 1
-position = Vector2(3, -12)
-sprite_frames = SubResource("SpriteFrames_xnr8x")
-animation = &"hurt"
-autoplay = "hurt"
-frame_progress = 0.8253579
-
-[node name="FloorRay" type="RayCast2D" parent="Body" unique_id=1467467166]
-position = Vector2(-2.08165e-12, -10)
-target_position = Vector2(0, 19)
-collide_with_areas = true
+script = ExtResource("1_ihqaa")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2061445168]
 position = Vector2(0.25, -11)
 shape = SubResource("RectangleShape2D_e26c0")
 debug_color = Color(0, 0.6, 0.7, 0.42)
 
-[node name="StateMachine" parent="." unique_id=1704606569 instance=ExtResource("2_qm0nl")]
+[node name="PhysicsHandler" type="Node" parent="." unique_id=292193102]
+
+[node name="Visuals" type="Node2D" parent="." unique_id=1744730213]
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Visuals" unique_id=1480093987]
+texture_filter = 1
+position = Vector2(3, -12)
+sprite_frames = SubResource("SpriteFrames_xnr8x")
+animation = &"cross"
+autoplay = "hurt"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Visuals" unique_id=862609086]
+libraries/ = SubResource("AnimationLibrary_7pdyy")
+
+[node name="Combat" type="Node2D" parent="." unique_id=1552571905]
+
+[node name="HurtBox" parent="Combat" unique_id=328271134 instance=ExtResource("7_mm1cx")]
+
+[node name="CollisionShape2D" parent="Combat/HurtBox" index="0" unique_id=1881333900]
+shape = SubResource("RectangleShape2D_mm1cx")
+
+[node name="HitBoxes" type="Node2D" parent="Combat" unique_id=1315800802]
+position = Vector2(3, 0)
+
+[node name="AerialDown" type="Area2D" parent="Combat/HitBoxes" unique_id=178237681]
+collision_layer = 4
+collision_mask = 24
+script = ExtResource("3_mm1cx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/AerialDown" unique_id=509632339]
+position = Vector2(-0.5, -0.5)
+shape = SubResource("RectangleShape2D_n2o1t")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+script = SubResource("GDScript_ihqaa")
+
+[node name="Jab" type="Area2D" parent="Combat/HitBoxes" unique_id=1256578608]
+collision_layer = 4
+collision_mask = 24
+monitoring = false
+script = ExtResource("3_mm1cx")
+hit_data = ExtResource("4_k77bq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/Jab" unique_id=1352841504]
+position = Vector2(5, -12)
+shape = SubResource("RectangleShape2D_2hyr6")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+
+[node name="Cross" type="Area2D" parent="Combat/HitBoxes" unique_id=1714319355]
+collision_layer = 4
+collision_mask = 24
+monitoring = false
+script = ExtResource("3_mm1cx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/Cross" unique_id=18633553]
+position = Vector2(5.5, -12.5)
+shape = SubResource("RectangleShape2D_0vigf")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+
+[node name="PowerCross" type="Area2D" parent="Combat/HitBoxes" unique_id=1991690144]
+collision_layer = 4
+collision_mask = 24
+monitoring = false
+script = ExtResource("3_mm1cx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/PowerCross" unique_id=327625872]
+position = Vector2(7.5, -13)
+shape = SubResource("RectangleShape2D_6fb6j")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+
+[node name="Hook" type="Area2D" parent="Combat/HitBoxes" unique_id=1646411215]
+collision_layer = 4
+collision_mask = 24
+monitoring = false
+script = ExtResource("3_mm1cx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/Hook" unique_id=811721205]
+position = Vector2(8.25, -13)
+shape = SubResource("RectangleShape2D_6fb6j")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+
+[node name="CrouchJab" type="Area2D" parent="Combat/HitBoxes" unique_id=250688119]
+collision_layer = 4
+collision_mask = 24
+monitoring = false
+script = ExtResource("3_mm1cx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/CrouchJab" unique_id=858043391]
+position = Vector2(5.25, -8)
+shape = SubResource("RectangleShape2D_yml3j")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+
+[node name="UpperCut" type="Area2D" parent="Combat/HitBoxes" unique_id=1359103086]
+position = Vector2(0, -2.08165e-12)
+collision_layer = 4
+collision_mask = 10
+monitoring = false
+script = ExtResource("3_mm1cx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/UpperCut" unique_id=590240720]
+position = Vector2(-0.5, -23.5)
+shape = SubResource("RectangleShape2D_nf6ms")
+disabled = true
+debug_color = Color(1, 0.34902, 0.423529, 0.545098)
+
+[node name="EnvironmentSensors" type="Node2D" parent="." unique_id=1640113]
+
+[node name="RWallCast" type="RayCast2D" parent="EnvironmentSensors" unique_id=2051910522]
+position = Vector2(-2.08165e-12, -11)
+rotation = -1.5708
+target_position = Vector2(-9.53674e-07, 11)
+hit_from_inside = true
+
+[node name="LWallCast" type="RayCast2D" parent="EnvironmentSensors" unique_id=2091866735]
+position = Vector2(-2.08165e-12, -11)
+rotation = 1.5708
+target_position = Vector2(0, 9)
+hit_from_inside = true
+
+[node name="FloorCast" type="RayCast2D" parent="EnvironmentSensors" unique_id=1467467166]
+position = Vector2(-2.08165e-12, -10)
+target_position = Vector2(0, 19)
+collide_with_areas = true
+
+[node name="SoftCollision" type="Area2D" parent="EnvironmentSensors" unique_id=1810078963]
+collision_layer = 32
+collision_mask = 32
+script = ExtResource("8_0061e")
+metadata/_custom_type_script = "uid://dekdrj2dp7q8i"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EnvironmentSensors/SoftCollision" unique_id=886755743]
+position = Vector2(-2.08165e-12, -6)
+shape = SubResource("CapsuleShape2D_6ysni")
+
+[node name="StateMachine" parent="." unique_id=1704606569 instance=ExtResource("7_1te0d")]
 
 [node name="Idle" type="Node" parent="StateMachine" unique_id=1517457493 node_paths=PackedStringArray("Actor")]
 script = SubResource("GDScript_holk3")
@@ -1226,43 +1702,43 @@ Actor = NodePath("../..")
 [node name="Fall" type="Node" parent="StateMachine" unique_id=1974372353 node_paths=PackedStringArray("Actor", "wallRaycastL", "wallRaycastR")]
 script = SubResource("GDScript_7h0ag")
 Actor = NodePath("../..")
-wallRaycastL = NodePath("../../WallDetection/RayCastLeft")
-wallRaycastR = NodePath("../../WallDetection/RayCastRight")
+wallRaycastL = NodePath("../../EnvironmentSensors/LWallCast")
+wallRaycastR = NodePath("../../EnvironmentSensors/RWallCast")
 
 [node name="CrouchJab" type="Node" parent="StateMachine" unique_id=1973163816 node_paths=PackedStringArray("Actor", "HitBox")]
 script = SubResource("GDScript_2330s")
 Actor = NodePath("../..")
-HitBox = NodePath("../../Body/HitBoxes/CrouchJab/CollisionShape2D")
+HitBox = NodePath("../../Combat/HitBoxes/CrouchJab/CollisionShape2D")
 
 [node name="Jab" type="Node" parent="StateMachine" unique_id=309972133 node_paths=PackedStringArray("Actor", "HitBox")]
 script = SubResource("GDScript_hb3du")
 Actor = NodePath("../..")
-HitBox = NodePath("../../Body/HitBoxes/Jab/CollisionShape2D")
+HitBox = NodePath("../../Combat/HitBoxes/Jab/CollisionShape2D")
 
 [node name="Cross" type="Node" parent="StateMachine" unique_id=1218259109 node_paths=PackedStringArray("Actor", "HitBox")]
 script = SubResource("GDScript_vl204")
 Actor = NodePath("../..")
-HitBox = NodePath("../../Body/HitBoxes/Cross/CollisionShape2D")
+HitBox = NodePath("../../Combat/HitBoxes/Cross/CollisionShape2D")
 
 [node name="PowerCross" type="Node" parent="StateMachine" unique_id=396720247 node_paths=PackedStringArray("Actor", "HitBox")]
 script = SubResource("GDScript_cw3vx")
 Actor = NodePath("../..")
-HitBox = NodePath("../../Body/HitBoxes/PowerCross/CollisionShape2D")
+HitBox = NodePath("../../Combat/HitBoxes/PowerCross/CollisionShape2D")
 
 [node name="Hook" type="Node" parent="StateMachine" unique_id=1945705065 node_paths=PackedStringArray("Actor", "HitBox")]
 script = SubResource("GDScript_ug7xa")
 Actor = NodePath("../..")
-HitBox = NodePath("../../Body/HitBoxes/Hook/CollisionShape2D")
+HitBox = NodePath("../../Combat/HitBoxes/Hook/CollisionShape2D")
 
 [node name="DownAerial" type="Node" parent="StateMachine" unique_id=64785944 node_paths=PackedStringArray("Actor", "HitBox")]
 script = SubResource("GDScript_e0m6j")
 Actor = NodePath("../..")
-HitBox = NodePath("../../Body/HitBoxes/AerialDown/CollisionShape2D")
+HitBox = NodePath("../../Combat/HitBoxes/AerialDown/CollisionShape2D")
 
 [node name="UpAerial" type="Node" parent="StateMachine" unique_id=1612597250 node_paths=PackedStringArray("Actor", "HitBox")]
 script = SubResource("GDScript_fnkjj")
 Actor = NodePath("../..")
-HitBox = NodePath("../../Body/HitBoxes/AerialUp/CollisionShape2D")
+HitBox = NodePath("../../Combat/HitBoxes/UpperCut/CollisionShape2D")
 
 [node name="WallSlide" type="Node" parent="StateMachine" unique_id=231504725 node_paths=PackedStringArray("Actor")]
 script = SubResource("GDScript_uwhvp")
@@ -1279,7 +1755,7 @@ Actor = NodePath("../..")
 [node name="Uppercut" type="Node" parent="StateMachine" unique_id=264851494 node_paths=PackedStringArray("Actor", "HitBox")]
 script = SubResource("GDScript_8g4oa")
 Actor = NodePath("../..")
-HitBox = NodePath("../../Body/HitBoxes/AerialUp/CollisionShape2D")
+HitBox = NodePath("../../Combat/HitBoxes/UpperCut/CollisionShape2D")
 metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
 
 [node name="CrossRecover" type="Node" parent="StateMachine" unique_id=1748185365 node_paths=PackedStringArray("Actor")]
@@ -1292,46 +1768,6 @@ script = SubResource("GDScript_s1rgi")
 Actor = NodePath("../..")
 metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
 
-[node name="CrossTimer" type="Timer" parent="." unique_id=650838513]
-one_shot = true
+[node name="Stats" parent="." unique_id=2122876768 instance=ExtResource("12_k77bq")]
 
-[node name="OrientationTimer" type="Timer" parent="." unique_id=24299992]
-wait_time = 0.5
-one_shot = true
-
-[node name="SoftCollision" type="Area2D" parent="." unique_id=1810078963]
-collision_layer = 32
-collision_mask = 32
-script = ExtResource("5_8g4oa")
-metadata/_custom_type_script = "uid://dekdrj2dp7q8i"
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SoftCollision" unique_id=886755743]
-position = Vector2(-2.08165e-12, -6)
-shape = SubResource("CapsuleShape2D_6ysni")
-
-[node name="HurtBox" type="Area2D" parent="." unique_id=1189088165]
-collision_layer = 256
-collision_mask = 0
-script = SubResource("GDScript_j23h2")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox" unique_id=789421601]
-position = Vector2(-2.08165e-12, -11)
-shape = SubResource("RectangleShape2D_s1rgi")
-debug_color = Color(0.8352941, 0.09803922, 0.20392157, 0.54509807)
-
-[connection signal="area_entered" from="Body/HitBoxes/AerialDown" to="Body/HitBoxes/AerialDown" method="_on_area_entered"]
-[connection signal="area_entered" from="Body/HitBoxes/AerialDown" to="StateMachine/DownAerial" method="_on_aerial_down_area_entered"]
-[connection signal="body_entered" from="Body/HitBoxes/AerialDown" to="Body/HitBoxes/AerialDown" method="_on_body_entered"]
-[connection signal="body_entered" from="Body/HitBoxes/AerialDown" to="StateMachine/DownAerial" method="_on_aerial_down_body_entered"]
-[connection signal="area_entered" from="Body/HitBoxes/Jab" to="Body/HitBoxes/Jab" method="_on_area_entered"]
-[connection signal="body_entered" from="Body/HitBoxes/Jab" to="Body/HitBoxes/Jab" method="_on_body_entered"]
-[connection signal="area_entered" from="Body/HitBoxes/Cross" to="Body/HitBoxes/Cross" method="_on_area_entered"]
-[connection signal="body_entered" from="Body/HitBoxes/Cross" to="Body/HitBoxes/Cross" method="_on_body_entered"]
-[connection signal="area_entered" from="Body/HitBoxes/PowerCross" to="Body/HitBoxes/PowerCross" method="_on_area_entered"]
-[connection signal="body_entered" from="Body/HitBoxes/PowerCross" to="Body/HitBoxes/PowerCross" method="_on_body_entered"]
-[connection signal="area_entered" from="Body/HitBoxes/Hook" to="Body/HitBoxes/Hook" method="_on_area_entered"]
-[connection signal="body_entered" from="Body/HitBoxes/Hook" to="Body/HitBoxes/Hook" method="_on_body_entered"]
-[connection signal="area_entered" from="Body/HitBoxes/CrouchJab" to="Body/HitBoxes/CrouchJab" method="_on_area_entered"]
-[connection signal="body_entered" from="Body/HitBoxes/CrouchJab" to="Body/HitBoxes/CrouchJab" method="_on_body_entered"]
-[connection signal="timeout" from="CrossTimer" to="." method="_on_cross_timer_timeout"]
-[connection signal="timeout" from="OrientationTimer" to="." method="_on_orientation_timer_timeout"]
+[editable path="Combat/HurtBox"]

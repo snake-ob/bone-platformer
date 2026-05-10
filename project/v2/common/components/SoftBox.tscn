@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bdlmiphmi1ljp"]
+
+[ext_resource type="Script" uid="uid://du5juu3ydrvbm" path="res://v2/common/components/softbox.gd" id="1_wl85n"]
+
+[node name="SoftBox" type="Area2D" unique_id=1618267625]
+script = ExtResource("1_wl85n")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1607143299]

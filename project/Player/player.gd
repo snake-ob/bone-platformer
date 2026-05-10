@@ -32,7 +32,7 @@ const CROSS_READY_TIME = 0.15
 
 var current_tile: Vector2i
 
-var max_health = 1
+var max_health = 3
 var health
 
 var current_direction : int
@@ -64,7 +64,6 @@ var orientation_ready : bool:
 func _ready():
 	StateMachine._set_state(DEBUG_STATE)
 	StateMachine.change_animation.connect(_on_change_animation)
-	crossTimer.wait_time = CROSS_READY_TIME
 	$HurtBox.take_hit.connect(_on_hurtbox_take_hit)
 	
 	health = max_health

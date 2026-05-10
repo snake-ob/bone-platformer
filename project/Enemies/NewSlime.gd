@@ -11,7 +11,7 @@ const PREF_SLOT = 2
 var health : int
 
 var target_pos : Vector2
-var target_slot = 3
+var target_slot = 1
 var current_slot : int
 
 signal get_target_position(requester)

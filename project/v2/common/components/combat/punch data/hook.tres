@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="HitData" format=3 uid="uid://b8f7cwb7hjmm0"]
+
+[ext_resource type="Script" uid="uid://bwjk83pqwneo2" path="res://v2/common/components/combat/hitdata.gd" id="1_8wlni"]
+
+[resource]
+script = ExtResource("1_8wlni")
+knockback = 200.0
+metadata/_custom_type_script = "uid://bwjk83pqwneo2"

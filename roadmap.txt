@@ -28,3 +28,18 @@ April 15
 - When health hits 0 - GAME OVER screen
 - Reload level
 - Add upper cut
+---
+
+April 23
+- New enemy added (little runner)
+
+===
+
+May 10
+- Game idea: BOXERS (boxing boxers wearing boxers. Maybe boxers power up)
+- Refactor : EASY TO MAKE NEW ENEMIES
+	- Composition v Inheritance
+	- Draggable state nodes
+	- Health, hurtbox, hitbox, and movement nodes
+	- Easy to make new enemies
+-
