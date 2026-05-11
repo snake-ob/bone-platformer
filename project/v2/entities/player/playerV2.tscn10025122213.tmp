@@ -955,7 +955,6 @@ height = 16.0
 script/source = "extends State
 
 func _enter_state():
-	ref.visuals.play('idle')
 	actor.velocity.x = 0
 
 func _physics_update(delta):

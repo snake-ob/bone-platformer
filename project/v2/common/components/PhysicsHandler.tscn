@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b8w1coi8o5ci4"]
+
+[ext_resource type="Script" uid="uid://c1370sdamydjh" path="res://v2/common/components/physics_handler.gd" id="1_17chc"]
+
+[node name="PhysicsHandler" type="Node" unique_id=204414050]
+script = ExtResource("1_17chc")

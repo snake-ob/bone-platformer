@@ -13,13 +13,13 @@ func _ready():
 		if state is State:
 			states[state.name.to_lower()] = state
 			state.change_state.connect(_on_change_state)
-
-func _setup_state(p_actor: CharacterBody2D, p_visuals: AnimationPlayer, p_stats: StatsComponent, p_input: InputController):
-	for state in states.values():
-		state._setup(p_actor, p_visuals, p_stats, p_input)
 	
-	if states.has('idle'):
-		_set_state('idle')
+func setup_states(actor, p_data):
+	for state in get_children():
+		if state.has_method("_setup_state"):
+			state._setup_state(actor, p_data)
+	_set_state('idle')
+	
 
 func _process(delta):
 	if current_state:
@@ -40,7 +40,7 @@ func _set_state(new_state_name : String):
 		previous_state = current_state
 		previous_state._exit_state()
 		
-	current_state = states[new_state]
+	current_state = new_state
 	current_state._enter_state()
 	state_changed.emit(new_state)
 

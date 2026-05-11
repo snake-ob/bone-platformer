@@ -955,7 +955,6 @@ height = 16.0
 script/source = "extends State
 
 func _enter_state():
-	ref.visuals.play('idle')
 	actor.velocity.x = 0
 
 func _physics_update(delta):
@@ -1134,6 +1133,7 @@ shape = SubResource("CapsuleShape2D_6ysni")
 [node name="Stats" parent="." unique_id=2122876768 instance=ExtResource("12_k77bq")]
 
 [node name="InputController" parent="." unique_id=1579598890 instance=ExtResource("14_1te0d")]
+hold_threshold = null
 
 [node name="StateMachine" parent="." unique_id=2131812207 instance=ExtResource("15_0061e")]
 

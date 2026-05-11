@@ -8,6 +8,7 @@ class_name InputController
 var move_axis: float = 0.0
 var jump_requested: bool = false
 var jump_held: bool = false
+var is_crouching: bool = false
 
 # --- Combat ---
 var press_start_time: float = 0.0
@@ -58,3 +59,6 @@ func consume_punch() -> Dictionary:
 		punch_requested = false
 		hold_timer.stop()
 	return punch_data
+
+func consume_jump() -> Dictionary:
+	return {}
