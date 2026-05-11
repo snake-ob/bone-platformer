@@ -1,5 +1,5 @@
 extends Area2D
-class_name SoftCollision
+class_name LSoftCollision
 
 func is_colliding():
 	var areas = get_overlapping_areas()

@@ -1,0 +1,210 @@
+[gd_scene format=4 uid="uid://p8sdxapktieb"]
+
+[ext_resource type="PackedScene" uid="uid://72w20oly0jvi" path="res://v2/entities/player/playerV2.tscn" id="1_jit8c"]
+[ext_resource type="Script" uid="uid://c3yqqfuapx6eu" path="res://HighlightedTiles.gd" id="2_2hddb"]
+[ext_resource type="TileSet" uid="uid://cmfvulk7q7jpx" path="res://TestTileSet.tres" id="3_ge5du"]
+[ext_resource type="PackedScene" uid="uid://cp3gsrjxk150t" path="res://DebugGameOver.tscn" id="6_5013t"]
+
+[sub_resource type="GDScript" id="GDScript_xnb64"]
+resource_name = "Level"
+script/source = "extends Node2D
+
+var current_player_tile
+var active_enemies : Array
+var death_timer : Timer
+var restart_timer: Timer
+
+func _ready() -> void:
+	Engine.time_scale = 1
+	death_timer = Timer.new()
+	add_child(death_timer)
+	death_timer.one_shot = true
+	death_timer.timeout.connect(_on_death_timer)
+	restart_timer = Timer.new()
+	add_child(restart_timer)
+	restart_timer.one_shot = true
+	restart_timer.timeout.connect(_on_restart_timer)
+	$QueueManager.slots_updated.connect(_on_slots_updated)
+
+	for enemy in $Enemies.get_children():
+		enemy.player_range.connect(_on_player_range)
+		enemy.player_lost.connect(_on_player_lost)
+		enemy.get_player_pos.connect(_on_player_pos_request)
+
+func _on_player_new_tile(new_tile, tilemap):
+	active_enemies = sort_enemies_by_distance(active_enemies)
+
+	$QueueManager.refresh_tiles(new_tile, tilemap) 
+	$EnemyManager.set_enemy_targets()
+
+func _on_slots_updated(slots):
+	$EnemyManager.player_pos = $Player.global_position
+	$EnemyManager._catch_slots(slots)
+
+func _on_player_range(enemy: Node2D):
+	active_enemies.append(enemy)
+	$EnemyManager._catch_enemies(active_enemies)
+
+func _on_player_lost(enemy: Node2D):
+	active_enemies.erase(enemy)
+	$EnemyManager._catch_enemies(active_enemies)
+
+func sort_enemies_by_distance(enemy_array: Array):
+	enemy_array.sort_custom(func(a, b):
+		var dist_a = a.global_position.distance_squared_to($Player.global_position)
+		var dist_b = b.global_position.distance_squared_to($Player.global_position)
+
+		return dist_a < dist_b
+	)
+	return enemy_array
+
+func _on_player_pos_request(requester):
+	requester._catch_player_pos($Player.global_position)
+
+func _on_player_death():
+	death_timer.start(1)
+	get_tree().paused = true
+
+func _on_death_timer():
+	restart_timer.start(0.6)
+
+	Engine.time_scale = 0.2
+	$GameOver.show()
+	get_tree().paused = false
+	
+func _on_restart_timer():
+	print(\"Game Reset\")
+	get_tree().reload_current_scene()
+"
+
+[sub_resource type="GDScript" id="GDScript_e6i1n"]
+script/source = "extends Node2D
+#This is a Node2D so that we can debug slot positions
+
+class Slot:
+	var active: bool = false
+	var held_by: Enemy = null
+	var reserved_by: Enemy = null
+	var centre: Vector2
+	var pos_index: int = 0
+	
+	func is_available():
+		return held_by == null and reserved_by == null and active == true
+		
+	func _to_string():
+		return \"Slot(index:%d, x:%d, y:%d)\" % [pos_index, centre.x, centre.y]
+		
+var slots: Dictionary
+
+signal slots_updated(slots)
+
+func _draw():
+	for key in slots:
+		var slot = slots[key]
+		var draw_pos = slot.centre - global_position
+		draw_circle(draw_pos, 5.0, Color.INDIAN_RED)
+
+func _ready():
+	for i in range(-3,4):
+		if i == 0: continue
+		var new_slot = Slot.new()
+		new_slot.pos_index = i
+		slots[i] = new_slot
+
+func refresh_tiles(new_tile :Vector2i, tile_map: TileMapLayer):
+	var centre_tile_pos = tile_map.to_global(tile_map.map_to_local(new_tile))
+	var tile_width = tile_map.tile_set.tile_size.x
+	
+	for key in slots:
+		var slot = slots[key]
+		var offset_x = slot.pos_index * tile_width
+		slot.centre.x = centre_tile_pos.x + offset_x
+		slot.centre.y = centre_tile_pos.y
+		slot.active = true #check first
+		slot.held_by = null
+		slot.reserved_by = null
+		
+	queue_redraw()
+	slots_updated.emit(slots)
+"
+
+[sub_resource type="GDScript" id="GDScript_tnerh"]
+script/source = "extends Node
+
+var slots: Dictionary
+var focused_enemies: Array
+var player_pos: Vector2
+
+# Keeps track of all enemy positions close to player
+# Gives each enemy a slot target on queue refresh
+# Loops through enemy, from closest to farthest, and assigns them
+# a slot target (depending on slot availability)
+
+# Assigns enemies to their 'active' spot.
+# If they don't have one, they are added to a waiting list to wait
+# behind the active spot. If no enemy has that active spot reserved
+# after assigning. They will be assigned to their waiting spot
+# (this will form a line where they wait for the next enemy to
+# get out of the way)
+
+
+func _catch_slots(new_slots: Dictionary):
+	# QueueManager will pass new slots every update
+	if new_slots:
+		slots = new_slots
+
+func set_enemy_targets():
+	for enemy in focused_enemies:
+		var pref_slot = enemy.target_slot
+		if enemy.global_position.x < player_pos.x:
+			pref_slot *= -1
+		try_slotting(enemy, pref_slot)
+
+func try_slotting(enemy, pref_slot):
+	if pref_slot > 3 or pref_slot < -3:
+		return
+	if slots[pref_slot].is_available():
+		enemy.target_pos = slots[pref_slot].centre
+		slots[pref_slot].reserved_by = enemy
+		enemy.current_slot = pref_slot
+	elif pref_slot > 0:
+		pref_slot += 1
+		try_slotting(enemy, pref_slot)
+	elif pref_slot < 0:
+		pref_slot -= 1
+		try_slotting(enemy, pref_slot)
+
+func _catch_enemies(enemies: Array):
+	focused_enemies = enemies
+"
+
+[node name="LevelTest_Mar25" type="Node2D" unique_id=1451453980]
+process_mode = 3
+script = SubResource("GDScript_xnb64")
+
+[node name="Player" parent="." unique_id=1517185507 instance=ExtResource("1_jit8c")]
+position = Vector2(152, 40)
+
+[node name="QueueManager" type="Node2D" parent="." unique_id=1050496794]
+process_mode = 1
+z_index = 1
+position = Vector2(88, -40)
+script = SubResource("GDScript_e6i1n")
+
+[node name="EnemyManager" type="Node" parent="." unique_id=746036016]
+process_mode = 1
+script = SubResource("GDScript_tnerh")
+
+[node name="Tilemap" type="Node2D" parent="." unique_id=964033396]
+process_mode = 1
+script = ExtResource("2_2hddb")
+
+[node name="Ground" type="TileMapLayer" parent="Tilemap" unique_id=1029366396]
+tile_map_data = PackedByteArray("AAAZAAsAAAAHAAUAAAAZAAoAAAAHAAQAAAAZAAkAAAAHAAQAAAAZAAgAAAAHAAQAAAAZAAcAAAAHAAQAAAAZAAYAAAAHAAQAAAAZAAUAAAAHAAQAAAAZAAQAAAAHAAMAAAAYAAsAAAABAAUAAAAYAAoAAAABAAQAAAAYAAkAAAABAAQAAAAYAAgAAAABAAQAAAAYAAcAAAABAAQAAAAYAAYAAAABAAQAAAAYAAUAAAABAAQAAAAYAAQAAAABAAQAAAAXAAsAAAADAAUAAAAXAAoAAAABAAQAAAAXAAkAAAABAAQAAAAXAAgAAAABAAQAAAAXAAcAAAABAAQAAAAXAAYAAAABAAQAAAAXAAUAAAABAAQAAAAXAAQAAAABAAQAAAAWAAsAAAABAAUAAAAWAAoAAAABAAQAAAAWAAkAAAABAAQAAAAWAAgAAAABAAQAAAAWAAcAAAABAAQAAAAWAAYAAAABAAQAAAAWAAUAAAABAAQAAAAWAAQAAAABAAQAAAAVAAsAAAACAAUAAAAVAAoAAAABAAQAAAAVAAkAAAABAAQAAAAVAAgAAAABAAQAAAAVAAcAAAABAAQAAAAVAAYAAAABAAQAAAAVAAUAAAABAAQAAAAVAAQAAAABAAQAAAAUAAsAAAADAAUAAAAUAAoAAAABAAQAAAAUAAkAAAABAAQAAAAUAAgAAAABAAQAAAAUAAcAAAABAAQAAAAUAAYAAAABAAQAAAAUAAUAAAABAAQAAAAUAAQAAAABAAQAAAATAAsAAAABAAUAAAATAAoAAAABAAQAAAATAAkAAAABAAQAAAATAAgAAAABAAQAAAATAAcAAAABAAQAAAATAAYAAAABAAQAAAATAAUAAAABAAQAAAATAAQAAAABAAQAAAASAAsAAAADAAUAAAASAAoAAAABAAQAAAASAAkAAAABAAQAAAASAAgAAAABAAQAAAASAAcAAAABAAQAAAASAAYAAAABAAQAAAASAAUAAAABAAQAAAASAAQAAAABAAQAAAARAAsAAAACAAUAAAARAAoAAAABAAQAAAARAAkAAAABAAQAAAARAAgAAAABAAQAAAARAAcAAAABAAQAAAARAAYAAAABAAQAAAARAAUAAAABAAQAAAARAAQAAAABAAQAAAAQAAsAAAADAAUAAAAQAAoAAAABAAQAAAAQAAkAAAABAAQAAAAQAAgAAAABAAQAAAAQAAcAAAABAAQAAAAQAAYAAAABAAQAAAAQAAUAAAABAAQAAAAQAAQAAAABAAQAAAAPAAsAAAADAAUAAAAPAAoAAAABAAQAAAAPAAkAAAABAAQAAAAPAAgAAAABAAQAAAAPAAcAAAABAAQAAAAPAAYAAAABAAQAAAAPAAUAAAABAAQAAAAPAAQAAAABAAQAAAAOAAsAAAABAAUAAAAOAAoAAAABAAQAAAAOAAkAAAABAAQAAAAOAAgAAAABAAQAAAAOAAcAAAABAAQAAAAOAAYAAAABAAQAAAAOAAUAAAABAAQAAAAOAAQAAAABAAQAAAANAAsAAAABAAUAAAANAAoAAAABAAQAAAANAAkAAAABAAQAAAANAAgAAAABAAQAAAANAAcAAAABAAQAAAANAAYAAAABAAQAAAANAAUAAAABAAQAAAANAAQAAAABAAQAAAAMAAsAAAADAAUAAAAMAAoAAAABAAQAAAAMAAkAAAABAAQAAAAMAAgAAAABAAQAAAAMAAcAAAABAAQAAAAMAAYAAAABAAQAAAAMAAUAAAABAAQAAAAMAAQAAAABAAQAAAALAAsAAAAGAAUAAAALAAoAAAABAAQAAAALAAkAAAABAAQAAAALAAgAAAABAAQAAAALAAcAAAABAAQAAAALAAYAAAABAAQAAAALAAUAAAABAAQAAAALAAQAAAABAAQAAAAKAAsAAAAGAAUAAAAKAAoAAAABAAQAAAAKAAkAAAABAAQAAAAKAAgAAAABAAQAAAAKAAcAAAABAAQAAAAKAAYAAAABAAQAAAAKAAUAAAABAAQAAAAKAAQAAAABAAQAAAAJAAsAAAAGAAUAAAAJAAoAAAABAAQAAAAJAAkAAAABAAQAAAAJAAgAAAABAAQAAAAJAAcAAAABAAQAAAAJAAYAAAABAAQAAAAJAAUAAAABAAQAAAAJAAQAAAABAAQAAAAIAAsAAAAGAAUAAAAIAAoAAAABAAQAAAAIAAkAAAABAAQAAAAIAAgAAAABAAQAAAAIAAcAAAABAAQAAAAIAAYAAAABAAQAAAAIAAUAAAABAAQAAAAIAAQAAAABAAQAAAAHAAsAAAAGAAUAAAAHAAoAAAABAAQAAAAHAAkAAAABAAQAAAAHAAgAAAABAAQAAAAHAAcAAAABAAQAAAAHAAYAAAABAAQAAAAHAAUAAAABAAQAAAAHAAQAAAABAAQAAAAGAAsAAAADAAUAAAAGAAoAAAABAAQAAAAGAAkAAAABAAQAAAAGAAgAAAABAAQAAAAGAAcAAAABAAQAAAAGAAYAAAABAAQAAAAGAAUAAAABAAQAAAAGAAQAAAABAAQAAAAFAAsAAAAGAAUAAAAFAAoAAAABAAQAAAAFAAkAAAABAAQAAAAFAAgAAAABAAQAAAAFAAcAAAABAAQAAAAFAAYAAAABAAQAAAAFAAUAAAABAAQAAAAFAAQAAAABAAQAAAAEAAsAAAADAAUAAAAEAAoAAAABAAQAAAAEAAkAAAABAAQAAAAEAAgAAAABAAQAAAAEAAcAAAABAAQAAAAEAAYAAAABAAQAAAAEAAUAAAABAAQAAAAEAAQAAAABAAQAAAADAAsAAAABAAUAAAADAAoAAAABAAQAAAADAAkAAAABAAQAAAADAAgAAAABAAQAAAADAAcAAAABAAQAAAADAAYAAAABAAQAAAADAAUAAAABAAQAAAADAAQAAAABAAQAAAACAAsAAAADAAUAAAACAAoAAAABAAQAAAACAAkAAAABAAQAAAACAAgAAAABAAQAAAACAAcAAAABAAQAAAACAAYAAAABAAQAAAACAAUAAAABAAQAAAACAAQAAAABAAQAAAABAAsAAAAGAAUAAAABAAoAAAABAAQAAAABAAkAAAABAAQAAAABAAgAAAABAAQAAAABAAcAAAABAAQAAAABAAYAAAABAAQAAAABAAUAAAABAAQAAAABAAQAAAABAAQAAAAAAAsAAAAAAAUAAAAAAAoAAAAAAAMAAAAAAAkAAAAAAAQAAAAAAAgAAAAAAAQAAAAAAAcAAAAAAAQAAAAAAAYAAAAAAAQAAAAAAAUAAAAAAAQAAAAAAAQAAAAAAAQAAAAAAAMAAAAEAAMAAAABAAMAAAAFAAMAAAACAAMAAAAEAAMAAAADAAMAAAAEAAMAAAAEAAMAAAAEAAMAAAAFAAMAAAAFAAMAAAAGAAMAAAAFAAMAAAAHAAMAAAAEAAMAAAAIAAMAAAAFAAMAAAAJAAMAAAAEAAMAAAAKAAMAAAAFAAMAAAALAAMAAAAEAAMAAAAMAAMAAAAFAAMAAAANAAMAAAAFAAMAAAAOAAMAAAAFAAMAAAAPAAMAAAAFAAMAAAAQAAMAAAAFAAMAAAARAAMAAAAEAAMAAAASAAMAAAAFAAMAAAATAAMAAAAEAAMAAAAUAAMAAAAFAAMAAAAVAAMAAAAFAAMAAAAWAAMAAAAFAAMAAAAXAAMAAAAFAAMAAAAYAAMAAAAFAAMAAAAZAAMAAAAFAAMAAAA=")
+tile_set = ExtResource("3_ge5du")
+
+[node name="Enemies" type="Node" parent="." unique_id=1399081434]
+process_mode = 1
+
+[node name="GameOver" parent="." unique_id=1904985792 instance=ExtResource("6_5013t")]
+visible = false
