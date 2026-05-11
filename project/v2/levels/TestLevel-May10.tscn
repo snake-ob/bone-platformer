@@ -3,8 +3,6 @@
 [ext_resource type="PackedScene" uid="uid://72w20oly0jvi" path="res://v2/entities/player/playerV2.tscn" id="1_jit8c"]
 [ext_resource type="Script" uid="uid://c3yqqfuapx6eu" path="res://HighlightedTiles.gd" id="2_2hddb"]
 [ext_resource type="TileSet" uid="uid://cmfvulk7q7jpx" path="res://TestTileSet.tres" id="3_ge5du"]
-[ext_resource type="PackedScene" uid="uid://c4wyehxyemlri" path="res://Enemies/new_slime.tscn" id="4_7rfyw"]
-[ext_resource type="PackedScene" uid="uid://r3rh6k4771r8" path="res://Enemies/LittleGhost.tscn" id="5_g4aeg"]
 [ext_resource type="PackedScene" uid="uid://cp3gsrjxk150t" path="res://DebugGameOver.tscn" id="6_5013t"]
 
 [sub_resource type="GDScript" id="GDScript_xnb64"]
@@ -26,9 +24,7 @@ func _ready() -> void:
 	add_child(restart_timer)
 	restart_timer.one_shot = true
 	restart_timer.timeout.connect(_on_restart_timer)
-	$Player.new_tile_entered.connect(_on_player_new_tile)
 	$QueueManager.slots_updated.connect(_on_slots_updated)
-	$Player.player_died.connect(_on_player_death)
 
 	for enemy in $Enemies.get_children():
 		enemy.player_range.connect(_on_player_range)
@@ -187,9 +183,7 @@ process_mode = 3
 script = SubResource("GDScript_xnb64")
 
 [node name="Player" parent="." unique_id=1517185507 instance=ExtResource("1_jit8c")]
-position = Vector2(208, 24)
-JUMP_FORCE = 10.0
-FRICTION = 10
+position = Vector2(152, 40)
 
 [node name="QueueManager" type="Node2D" parent="." unique_id=1050496794]
 process_mode = 1
@@ -211,17 +205,6 @@ tile_set = ExtResource("3_ge5du")
 
 [node name="Enemies" type="Node" parent="." unique_id=1399081434]
 process_mode = 1
-
-[node name="NewSlime" parent="Enemies" unique_id=475970655 instance=ExtResource("4_7rfyw")]
-position = Vector2(112, 0)
-collision_layer = 32
-
-[node name="NewSlime2" parent="Enemies" unique_id=1567492922 instance=ExtResource("4_7rfyw")]
-position = Vector2(176, -72)
-collision_layer = 32
-
-[node name="LittleGhost" parent="Enemies" unique_id=736844394 instance=ExtResource("5_g4aeg")]
-position = Vector2(256, 16)
 
 [node name="GameOver" parent="." unique_id=1904985792 instance=ExtResource("6_5013t")]
 visible = false

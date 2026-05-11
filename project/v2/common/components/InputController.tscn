@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dx05ccefchqls"]
+
+[ext_resource type="Script" uid="uid://qqocynespop3" path="res://v2/common/components/input_controller.gd" id="1_pp2pt"]
+
+[node name="InputController" type="Node" unique_id=1579598890]
+script = ExtResource("1_pp2pt")
+
+[node name="HoldTimer" type="Timer" parent="." unique_id=527743136]

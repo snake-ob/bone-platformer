@@ -71,7 +71,7 @@ func _ready():
 func set_state(state : String):
 	StateMachine._set_state(state)
 	
-	
+
 func _physics_process(delta):
 	check_colliding(delta)
 	move_and_slide()
