@@ -444,6 +444,7 @@ tracks/7/keys = {
 
 [sub_resource type="Animation" id="Animation_7pdyy"]
 resource_name = "cross"
+length = 0.15
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -956,9 +957,27 @@ height = 16.0
 [sub_resource type="GDScript" id="GDScript_7atpg"]
 script/source = "extends State
 
+@export var punch_buffer: float = 0.1
+var punch_timer: Timer
+var punch_ready: bool = false
+var buffered_punch = null
+
+func _ready():
+	punch_timer = Timer.new()
+	add_child(punch_timer)
+	punch_timer.one_shot = true
+	punch_timer.timeout.connect(_on_punch_timeout)
+
 func _enter_state():
 	ref.animation.play('idle')
 	actor.velocity.x = 0
+	punch_ready = false
+	punch_timer.start(punch_buffer)
+	buffered_punch = null
+	
+func _exit_state():
+	buffered_punch = null
+	punch_timer.stop()
 
 func _physics_update(delta):
 	if not actor.is_on_floor():
@@ -976,19 +995,35 @@ func _physics_update(delta):
 		
 	var punch = ref.input.consume_punch()
 	if punch.requested:
-		process_punch(punch)
+		buffered_punch = punch
 	
-
+	if buffered_punch and punch_ready:
+		var p_punch = buffered_punch
+		buffered_punch = null
+		process_punch(p_punch)
 
 func process_punch(punch):
-	print(\"PUNCH!\")
-	if punch.held:
-			change_state.emit(\"cross\")
-	elif punch.cross_ready:
-		change_state.emit(\"cross\")
-	else:
-		jab
-	return
+	match punch.combo:
+		0:
+			if punch.held:
+				ref.input.reset_combo()
+				change_state.emit(\"powercross\")
+			else:
+				ref.input.advance_combo()
+				change_state.emit('jab')
+		1:
+			if punch.held:
+				ref.input.reset_combo()
+				change_state.emit('hook')
+			else:
+				ref.input.reset_combo()
+				change_state.emit('cross')
+		_:
+			ref.input.reset_combo()
+			change_state.emit('idle')
+	
+func _on_punch_timeout():
+	punch_ready = true
 "
 
 [sub_resource type="GDScript" id="GDScript_pvyrk"]
@@ -1058,13 +1093,30 @@ script/source = "extends State
 
 func _enter_state():
 	ref.animation.play('jab')
-	actor.velocity.x = 0
 	
 	if not ref.animation.animation_finished.is_connected(_on_animation_finished):
 		ref.animation.animation_finished.connect(_on_animation_finished)
 	
 func _on_animation_finished(animation: String):
 	if animation == 'jab':
+		change_state.emit('idle')
+
+func _exit_state():
+	if ref.animation.animation_finished.is_connected(_on_animation_finished):
+		ref.animation.animation_finished.disconnect(_on_animation_finished)
+"
+
+[sub_resource type="GDScript" id="GDScript_qa43x"]
+script/source = "extends State
+
+func _enter_state():
+	ref.animation.play('cross')
+	
+	if not ref.animation.animation_finished.is_connected(_on_animation_finished):
+		ref.animation.animation_finished.connect(_on_animation_finished)
+	
+func _on_animation_finished(animation: String):
+	if animation == 'cross':
 		change_state.emit('idle')
 
 func _exit_state():
@@ -1232,6 +1284,7 @@ movement_data = ExtResource("14_pvyrk")
 
 [node name="Idle" type="Node" parent="StateMachine" unique_id=1702378880]
 script = SubResource("GDScript_7atpg")
+punch_buffer = 0.15
 
 [node name="Walk" type="Node" parent="StateMachine" unique_id=322945869]
 script = SubResource("GDScript_pvyrk")
@@ -1246,6 +1299,10 @@ metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
 
 [node name="Jab" type="Node" parent="StateMachine" unique_id=1947094569]
 script = SubResource("GDScript_ou68c")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
+[node name="Cross" type="Node" parent="StateMachine" unique_id=804798924]
+script = SubResource("GDScript_qa43x")
 metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
 
 [node name="Reference" parent="." unique_id=35379154 instance=ExtResource("16_7atpg")]
