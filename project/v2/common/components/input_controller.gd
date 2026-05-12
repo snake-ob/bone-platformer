@@ -60,5 +60,11 @@ func consume_punch() -> Dictionary:
 		hold_timer.stop()
 	return punch_data
 
-func consume_jump() -> Dictionary:
-	return {}
+func consume_jump() -> bool:
+	if jump_requested:
+		jump_requested = false
+		return true
+	return false
+
+func is_jump_held() -> bool:
+	return Input.is_action_pressed("ui_jump")

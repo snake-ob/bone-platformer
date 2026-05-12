@@ -7,7 +7,8 @@ func _ready():
 	ref.actor = self
 	ref.physics = $PhysicsHandler
 	ref.input = $InputController
-	ref.visuals = $Visuals/AnimationPlayer
+	ref.body = $Body
+	ref.animation = $Body/AnimationPlayer
 	ref.stats = $Stats
 	
 	setup_nodes(self)

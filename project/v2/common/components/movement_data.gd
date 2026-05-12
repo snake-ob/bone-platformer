@@ -9,3 +9,7 @@ class_name MovementData
 @export_group("Weights & Feel")
 @export var mass: float = 1.0
 @export var gravity_scale: float = 1.0
+
+@export_group("Jumping")
+@export var jump_vert: float = 4.0
+@export var jump_force: float = 10

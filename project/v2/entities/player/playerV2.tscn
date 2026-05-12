@@ -14,6 +14,7 @@
 [ext_resource type="Script" uid="uid://dekdrj2dp7q8i" path="res://Nodes/soft_collision.gd" id="8_0061e"]
 [ext_resource type="PackedScene" uid="uid://cg4wm8k107u7h" path="res://v2/common/components/Stats.tscn" id="12_k77bq"]
 [ext_resource type="PackedScene" uid="uid://dx05ccefchqls" path="res://v2/common/components/InputController.tscn" id="14_1te0d"]
+[ext_resource type="Resource" uid="uid://c5ssf74c1pjmq" path="res://v2/entities/player/player_data.tres" id="14_pvyrk"]
 [ext_resource type="PackedScene" uid="uid://tsk4w42k2j4l" path="res://v2/common/components/StateMachine.tscn" id="15_0061e"]
 [ext_resource type="PackedScene" uid="uid://pwj2psxmfixy" path="res://v2/common/components/Reference.tscn" id="16_7atpg"]
 
@@ -371,7 +372,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("../Combat/HitBoxes/Cross:monitoring")
+tracks/2/path = NodePath("HitBoxes/Cross:monitoring")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -383,7 +384,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("../Combat/HitBoxes/Jab:monitoring")
+tracks/3/path = NodePath("HitBoxes/Jab:monitoring")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -395,7 +396,7 @@ tracks/3/keys = {
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("../Combat/HitBoxes/PowerCross:monitoring")
+tracks/4/path = NodePath("HitBoxes/PowerCross:monitoring")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
@@ -407,7 +408,7 @@ tracks/4/keys = {
 tracks/5/type = "value"
 tracks/5/imported = false
 tracks/5/enabled = true
-tracks/5/path = NodePath("../Combat/HitBoxes/Hook:monitoring")
+tracks/5/path = NodePath("HitBoxes/Hook:monitoring")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
@@ -419,7 +420,7 @@ tracks/5/keys = {
 tracks/6/type = "value"
 tracks/6/imported = false
 tracks/6/enabled = true
-tracks/6/path = NodePath("../Combat/HitBoxes/CrouchJab:monitoring")
+tracks/6/path = NodePath("HitBoxes/CrouchJab:monitoring")
 tracks/6/interp = 1
 tracks/6/loop_wrap = true
 tracks/6/keys = {
@@ -431,7 +432,7 @@ tracks/6/keys = {
 tracks/7/type = "value"
 tracks/7/imported = false
 tracks/7/enabled = true
-tracks/7/path = NodePath("../Combat/HitBoxes/UpperCut:monitoring")
+tracks/7/path = NodePath("HitBoxes/UpperCut:monitoring")
 tracks/7/interp = 1
 tracks/7/loop_wrap = true
 tracks/7/keys = {
@@ -470,7 +471,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("../Combat/HitBoxes/Cross:monitoring")
+tracks/2/path = NodePath("HitBoxes/Cross:monitoring")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -536,7 +537,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("../Combat/HitBoxes/CrouchJab:monitoring")
+tracks/2/path = NodePath("HitBoxes/CrouchJab:monitoring")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -602,7 +603,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("../Combat/HitBoxes/Hook:monitoring")
+tracks/2/path = NodePath("HitBoxes/Hook:monitoring")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -670,6 +671,7 @@ tracks/1/keys = {
 
 [sub_resource type="Animation" id="Animation_ou68c"]
 resource_name = "jab"
+length = 0.15
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -697,7 +699,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("../Combat/HitBoxes/Jab:monitoring")
+tracks/2/path = NodePath("HitBoxes/Jab:monitoring")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -790,7 +792,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("../Combat/HitBoxes/PowerCross:monitoring")
+tracks/2/path = NodePath("HitBoxes/PowerCross:monitoring")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -829,7 +831,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("../Combat/HitBoxes/UpperCut:monitoring")
+tracks/2/path = NodePath("HitBoxes/UpperCut:monitoring")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -955,27 +957,119 @@ height = 16.0
 script/source = "extends State
 
 func _enter_state():
-	ref.visuals.play('idle')
+	ref.animation.play('idle')
 	actor.velocity.x = 0
 
 func _physics_update(delta):
 	if not actor.is_on_floor():
 		change_state.emit(\"fall\")
+		return
 	if ref.input.is_crouching:
 		change_state.emit(\"crouch\")
+		return
 	if ref.input.consume_jump():
 		change_state.emit(\"jump\")
+		return
 	
-	var attack = ref.input.consume_punch()
-	if attack.requested:
-		process_punch()
+	if ref.input.move_axis != 0:
+		change_state.emit(\"walk\")
+		
+	var punch = ref.input.consume_punch()
+	if punch.requested:
+		process_punch(punch)
 	
-func _setup_state(p_actor, p_data):
-	actor = p_actor
-	ref = p_data
 
-func process_punch():
-	pass
+
+func process_punch(punch):
+	print(\"PUNCH!\")
+	if punch.held:
+			change_state.emit(\"cross\")
+	elif punch.cross_ready:
+		change_state.emit(\"cross\")
+	else:
+		jab
+	return
+"
+
+[sub_resource type="GDScript" id="GDScript_pvyrk"]
+script/source = "extends State
+
+func _enter_state():
+	ref.animation.play('walk')
+	print(\"walk state entered\")
+
+func _physics_update(delta):
+	if ref.input.move_axis != 0:
+		ref.body.scale.x = sign(ref.input.move_axis)
+	else:
+		change_state.emit('idle')
+		return
+		
+	if ref.input.consume_jump():
+		print(\"Jump :)\")
+
+		change_state.emit(\"jump\")
+		return
+		
+	if actor.is_on_floor():
+		actor.velocity.x = ref.input.move_axis * ref.stats.movement_data.max_speed
+	else:
+		change_state.emit('fall')
+		return
+		
+	
+	
+"
+
+[sub_resource type="GDScript" id="GDScript_cgnby"]
+script/source = "extends State
+
+func _enter_state():
+	ref.animation.play('jump')
+	actor.velocity.y -= ref.stats.movement_data.jump_force
+
+func _physics_update(delta):
+	if actor.velocity.y < 0 and not ref.input.is_jump_held():
+		actor.velocity.y *= 0.2
+		pass
+	
+	if actor.velocity.y >= 0:
+		change_state.emit(\"fall\")
+		
+	
+"
+
+[sub_resource type="GDScript" id="GDScript_c0dq5"]
+script/source = "extends State
+
+func _enter_state():
+	ref.animation.play('jump')
+
+func _physics_update(delta):
+	if not actor.is_on_floor():
+		actor.velocity.y -= 1
+	else:
+		change_state.emit('idle')
+"
+
+[sub_resource type="GDScript" id="GDScript_ou68c"]
+resource_name = "Jab"
+script/source = "extends State
+
+func _enter_state():
+	ref.animation.play('jab')
+	actor.velocity.x = 0
+	
+	if not ref.animation.animation_finished.is_connected(_on_animation_finished):
+		ref.animation.animation_finished.connect(_on_animation_finished)
+	
+func _on_animation_finished(animation: String):
+	if animation == 'jab':
+		change_state.emit('idle')
+
+func _exit_state():
+	if ref.animation.animation_finished.is_connected(_on_animation_finished):
+		ref.animation.animation_finished.disconnect(_on_animation_finished)
 "
 
 [node name="Player" type="CharacterBody2D" unique_id=1517185507]
@@ -999,109 +1093,107 @@ position = Vector2(0.25, -11)
 shape = SubResource("RectangleShape2D_e26c0")
 debug_color = Color(0, 0.6, 0.7, 0.42)
 
-[node name="Visuals" type="Node2D" parent="." unique_id=1744730213]
+[node name="Body" type="Node2D" parent="." unique_id=1744730213]
 
-[node name="Sprite" type="AnimatedSprite2D" parent="Visuals" unique_id=1480093987]
+[node name="Sprite" type="AnimatedSprite2D" parent="Body" unique_id=1480093987]
 texture_filter = 1
 position = Vector2(3, -12)
 sprite_frames = SubResource("SpriteFrames_xnr8x")
 animation = &"cross"
 autoplay = "hurt"
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Visuals" unique_id=862609086]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Body" unique_id=862609086]
 libraries/ = SubResource("AnimationLibrary_7pdyy")
 
-[node name="Combat" type="Node2D" parent="." unique_id=1552571905]
+[node name="HurtBox" parent="Body" unique_id=328271134 instance=ExtResource("7_mm1cx")]
 
-[node name="HurtBox" parent="Combat" unique_id=328271134 instance=ExtResource("7_mm1cx")]
-
-[node name="CollisionShape2D" parent="Combat/HurtBox" index="0" unique_id=1881333900]
+[node name="CollisionShape2D" parent="Body/HurtBox" index="0" unique_id=1881333900]
 shape = SubResource("RectangleShape2D_mm1cx")
 
-[node name="HitBoxes" type="Node2D" parent="Combat" unique_id=1315800802]
+[node name="HitBoxes" type="Node2D" parent="Body" unique_id=1315800802]
 position = Vector2(3, 0)
 
-[node name="AerialDown" type="Area2D" parent="Combat/HitBoxes" unique_id=178237681]
+[node name="AerialDown" type="Area2D" parent="Body/HitBoxes" unique_id=178237681]
 collision_layer = 4
 collision_mask = 24
 script = ExtResource("3_mm1cx")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/AerialDown" unique_id=509632339]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/AerialDown" unique_id=509632339]
 position = Vector2(-0.5, -0.5)
 shape = SubResource("RectangleShape2D_n2o1t")
 disabled = true
 debug_color = Color(1, 0.34902, 0.423529, 0.545098)
 script = SubResource("GDScript_ihqaa")
 
-[node name="Jab" type="Area2D" parent="Combat/HitBoxes" unique_id=1256578608]
+[node name="Jab" type="Area2D" parent="Body/HitBoxes" unique_id=1256578608]
 collision_layer = 4
 collision_mask = 24
 monitoring = false
 script = ExtResource("3_mm1cx")
 hit_data = ExtResource("4_k77bq")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/Jab" unique_id=1352841504]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/Jab" unique_id=1352841504]
 position = Vector2(5, -12)
 shape = SubResource("RectangleShape2D_2hyr6")
 disabled = true
 debug_color = Color(1, 0.34902, 0.423529, 0.545098)
 
-[node name="Cross" type="Area2D" parent="Combat/HitBoxes" unique_id=1714319355]
+[node name="Cross" type="Area2D" parent="Body/HitBoxes" unique_id=1714319355]
 collision_layer = 4
 collision_mask = 24
 monitoring = false
 script = ExtResource("3_mm1cx")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/Cross" unique_id=18633553]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/Cross" unique_id=18633553]
 position = Vector2(5.5, -12.5)
 shape = SubResource("RectangleShape2D_0vigf")
 disabled = true
 debug_color = Color(1, 0.34902, 0.423529, 0.545098)
 
-[node name="PowerCross" type="Area2D" parent="Combat/HitBoxes" unique_id=1991690144]
+[node name="PowerCross" type="Area2D" parent="Body/HitBoxes" unique_id=1991690144]
 collision_layer = 4
 collision_mask = 24
 monitoring = false
 script = ExtResource("3_mm1cx")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/PowerCross" unique_id=327625872]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/PowerCross" unique_id=327625872]
 position = Vector2(7.5, -13)
 shape = SubResource("RectangleShape2D_6fb6j")
 disabled = true
 debug_color = Color(1, 0.34902, 0.423529, 0.545098)
 
-[node name="Hook" type="Area2D" parent="Combat/HitBoxes" unique_id=1646411215]
+[node name="Hook" type="Area2D" parent="Body/HitBoxes" unique_id=1646411215]
 collision_layer = 4
 collision_mask = 24
 monitoring = false
 script = ExtResource("3_mm1cx")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/Hook" unique_id=811721205]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/Hook" unique_id=811721205]
 position = Vector2(8.25, -13)
 shape = SubResource("RectangleShape2D_6fb6j")
 disabled = true
 debug_color = Color(1, 0.34902, 0.423529, 0.545098)
 
-[node name="CrouchJab" type="Area2D" parent="Combat/HitBoxes" unique_id=250688119]
+[node name="CrouchJab" type="Area2D" parent="Body/HitBoxes" unique_id=250688119]
 collision_layer = 4
 collision_mask = 24
 monitoring = false
 script = ExtResource("3_mm1cx")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/CrouchJab" unique_id=858043391]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/CrouchJab" unique_id=858043391]
 position = Vector2(5.25, -8)
 shape = SubResource("RectangleShape2D_yml3j")
 disabled = true
 debug_color = Color(1, 0.34902, 0.423529, 0.545098)
 
-[node name="UpperCut" type="Area2D" parent="Combat/HitBoxes" unique_id=1359103086]
+[node name="UpperCut" type="Area2D" parent="Body/HitBoxes" unique_id=1359103086]
 position = Vector2(0, -2.08165e-12)
 collision_layer = 4
 collision_mask = 10
 monitoring = false
 script = ExtResource("3_mm1cx")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Combat/HitBoxes/UpperCut" unique_id=590240720]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/HitBoxes/UpperCut" unique_id=590240720]
 position = Vector2(-0.5, -23.5)
 shape = SubResource("RectangleShape2D_nf6ms")
 disabled = true
@@ -1132,6 +1224,7 @@ position = Vector2(-2.08165e-12, -6)
 shape = SubResource("CapsuleShape2D_6ysni")
 
 [node name="Stats" parent="." unique_id=2122876768 instance=ExtResource("12_k77bq")]
+movement_data = ExtResource("14_pvyrk")
 
 [node name="InputController" parent="." unique_id=1579598890 instance=ExtResource("14_1te0d")]
 
@@ -1140,6 +1233,21 @@ shape = SubResource("CapsuleShape2D_6ysni")
 [node name="Idle" type="Node" parent="StateMachine" unique_id=1702378880]
 script = SubResource("GDScript_7atpg")
 
+[node name="Walk" type="Node" parent="StateMachine" unique_id=322945869]
+script = SubResource("GDScript_pvyrk")
+
+[node name="Jump" type="Node" parent="StateMachine" unique_id=1276817443]
+script = SubResource("GDScript_cgnby")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
+[node name="Fall" type="Node" parent="StateMachine" unique_id=84547602]
+script = SubResource("GDScript_c0dq5")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
+[node name="Jab" type="Node" parent="StateMachine" unique_id=1947094569]
+script = SubResource("GDScript_ou68c")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
 [node name="Reference" parent="." unique_id=35379154 instance=ExtResource("16_7atpg")]
 
-[editable path="Combat/HurtBox"]
+[editable path="Body/HurtBox"]

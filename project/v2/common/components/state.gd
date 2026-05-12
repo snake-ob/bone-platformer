@@ -18,3 +18,7 @@ func _update(delta):
 
 func _physics_update(delta):
 	pass
+	
+func _setup_state(p_actor, p_data):
+	actor = p_actor
+	ref = p_data
