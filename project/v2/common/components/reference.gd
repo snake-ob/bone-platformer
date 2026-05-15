@@ -9,3 +9,4 @@ var body: Node2D
 var animation: AnimationPlayer
 var stats: StatsComponent
 var world_data: WorldData
+var punching: PunchManager

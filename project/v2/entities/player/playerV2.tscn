@@ -17,6 +17,8 @@
 [ext_resource type="Resource" uid="uid://c5ssf74c1pjmq" path="res://v2/entities/player/player_data.tres" id="14_pvyrk"]
 [ext_resource type="PackedScene" uid="uid://tsk4w42k2j4l" path="res://v2/common/components/StateMachine.tscn" id="15_0061e"]
 [ext_resource type="PackedScene" uid="uid://pwj2psxmfixy" path="res://v2/common/components/Reference.tscn" id="16_7atpg"]
+[ext_resource type="PackedScene" uid="uid://dm3iftm4rrx36" path="res://v2/entities/player/components/PunchManager.tscn" id="17_cgnby"]
+[ext_resource type="PackedScene" uid="uid://beernwqnmopc" path="res://v2/entities/player/components/PunchIF.tscn" id="18_c0dq5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_e26c0"]
 size = Vector2(14.5, 22)
@@ -957,29 +959,18 @@ height = 16.0
 [sub_resource type="GDScript" id="GDScript_7atpg"]
 script/source = "extends State
 
-@export var punch_buffer: float = 0.1
-var punch_timer: Timer
-var punch_ready: bool = false
-var buffered_punch = null
-
-func _ready():
-	punch_timer = Timer.new()
-	add_child(punch_timer)
-	punch_timer.one_shot = true
-	punch_timer.timeout.connect(_on_punch_timeout)
-
 func _enter_state():
+	active = true
 	ref.animation.play('idle')
 	actor.velocity.x = 0
-	punch_ready = false
-	punch_timer.start(punch_buffer)
-	buffered_punch = null
-	
+
 func _exit_state():
-	buffered_punch = null
-	punch_timer.stop()
+	active = false
+	_reset_handlers()
 
 func _physics_update(delta):
+	for child in children:
+		child._physics_update(delta)
 	if not actor.is_on_floor():
 		change_state.emit(\"fall\")
 		return
@@ -989,41 +980,8 @@ func _physics_update(delta):
 	if ref.input.consume_jump():
 		change_state.emit(\"jump\")
 		return
-	
 	if ref.input.move_axis != 0:
 		change_state.emit(\"walk\")
-		
-	var punch = ref.input.consume_punch()
-	if punch.requested:
-		buffered_punch = punch
-	
-	if buffered_punch and punch_ready:
-		var p_punch = buffered_punch
-		buffered_punch = null
-		process_punch(p_punch)
-
-func process_punch(punch):
-	match punch.combo:
-		0:
-			if punch.held:
-				ref.input.reset_combo()
-				change_state.emit(\"powercross\")
-			else:
-				ref.input.advance_combo()
-				change_state.emit('jab')
-		1:
-			if punch.held:
-				ref.input.reset_combo()
-				change_state.emit('hook')
-			else:
-				ref.input.reset_combo()
-				change_state.emit('cross')
-		_:
-			ref.input.reset_combo()
-			change_state.emit('idle')
-	
-func _on_punch_timeout():
-	punch_ready = true
 "
 
 [sub_resource type="GDScript" id="GDScript_pvyrk"]
@@ -1031,9 +989,15 @@ script/source = "extends State
 
 func _enter_state():
 	ref.animation.play('walk')
-	print(\"walk state entered\")
+	
+func _exit_state():
+	_reset_handlers()
 
 func _physics_update(delta):
+	for child in children:
+		child._physics_update(delta)
+	if not active: return
+	
 	if ref.input.move_axis != 0:
 		ref.body.scale.x = sign(ref.input.move_axis)
 	else:
@@ -1041,8 +1005,6 @@ func _physics_update(delta):
 		return
 		
 	if ref.input.consume_jump():
-		print(\"Jump :)\")
-
 		change_state.emit(\"jump\")
 		return
 		
@@ -1093,6 +1055,7 @@ script/source = "extends State
 
 func _enter_state():
 	ref.animation.play('jab')
+	actor.velocity.x = 0
 	
 	if not ref.animation.animation_finished.is_connected(_on_animation_finished):
 		ref.animation.animation_finished.connect(_on_animation_finished)
@@ -1111,12 +1074,54 @@ script/source = "extends State
 
 func _enter_state():
 	ref.animation.play('cross')
+	actor.velocity.x = 0
 	
 	if not ref.animation.animation_finished.is_connected(_on_animation_finished):
 		ref.animation.animation_finished.connect(_on_animation_finished)
 	
 func _on_animation_finished(animation: String):
 	if animation == 'cross':
+		change_state.emit('idle')
+
+func _exit_state():
+	if ref.animation.animation_finished.is_connected(_on_animation_finished):
+		ref.animation.animation_finished.disconnect(_on_animation_finished)
+"
+
+[sub_resource type="GDScript" id="GDScript_k0edx"]
+script/source = "extends State
+
+func _enter_state():
+	print(\"Hook!\")
+	ref.animation.play('hook')
+	actor.velocity.x = 0
+	
+	if not ref.animation.animation_finished.is_connected(_on_animation_finished):
+		ref.animation.animation_finished.connect(_on_animation_finished)
+	
+func _on_animation_finished(animation: String):
+	if animation == 'hook':
+		change_state.emit('idle')
+
+func _exit_state():
+	if ref.animation.animation_finished.is_connected(_on_animation_finished):
+		ref.animation.animation_finished.disconnect(_on_animation_finished)
+"
+
+[sub_resource type="GDScript" id="GDScript_yt74w"]
+resource_name = "PowerCross"
+script/source = "extends State
+
+func _enter_state():
+	print(\"Powercross!\")
+	ref.animation.play('powercross')
+	actor.velocity.x = 0
+	
+	if not ref.animation.animation_finished.is_connected(_on_animation_finished):
+		ref.animation.animation_finished.connect(_on_animation_finished)
+	
+func _on_animation_finished(animation: String):
+	if animation == 'powercross':
 		change_state.emit('idle')
 
 func _exit_state():
@@ -1280,14 +1285,20 @@ movement_data = ExtResource("14_pvyrk")
 
 [node name="InputController" parent="." unique_id=1579598890 instance=ExtResource("14_1te0d")]
 
+[node name="PunchManager" parent="." unique_id=1285266687 instance=ExtResource("17_cgnby")]
+punch_buffer = 0.25
+
 [node name="StateMachine" parent="." unique_id=2131812207 instance=ExtResource("15_0061e")]
 
 [node name="Idle" type="Node" parent="StateMachine" unique_id=1702378880]
 script = SubResource("GDScript_7atpg")
-punch_buffer = 0.15
+
+[node name="PunchIF" parent="StateMachine/Idle" unique_id=1258500892 instance=ExtResource("18_c0dq5")]
 
 [node name="Walk" type="Node" parent="StateMachine" unique_id=322945869]
 script = SubResource("GDScript_pvyrk")
+
+[node name="PunchIF" parent="StateMachine/Walk" unique_id=1840711103 instance=ExtResource("18_c0dq5")]
 
 [node name="Jump" type="Node" parent="StateMachine" unique_id=1276817443]
 script = SubResource("GDScript_cgnby")
@@ -1303,6 +1314,14 @@ metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
 
 [node name="Cross" type="Node" parent="StateMachine" unique_id=804798924]
 script = SubResource("GDScript_qa43x")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
+[node name="Hook" type="Node" parent="StateMachine" unique_id=2114374007]
+script = SubResource("GDScript_k0edx")
+metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
+
+[node name="PowerCross" type="Node" parent="StateMachine" unique_id=898994707]
+script = SubResource("GDScript_yt74w")
 metadata/_custom_type_script = "uid://dlexbcb8bfd2k"
 
 [node name="Reference" parent="." unique_id=35379154 instance=ExtResource("16_7atpg")]

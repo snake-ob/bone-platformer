@@ -39,9 +39,11 @@ func _set_state(new_state_name : String):
 	if current_state:
 		previous_state = current_state
 		previous_state._exit_state()
+		previous_state.active = false
 		
 	current_state = new_state
 	current_state._enter_state()
+	current_state.active = true
 	state_changed.emit(new_state)
 
 func _on_change_state(new_state : String):

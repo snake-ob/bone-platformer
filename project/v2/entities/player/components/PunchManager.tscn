@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dm3iftm4rrx36"]
+
+[ext_resource type="Script" uid="uid://wtwypntxlcqi" path="res://v2/entities/player/components/punch_manager.gd" id="1_lqvv6"]
+
+[node name="PunchManager" type="Node" unique_id=1285266687]
+script = ExtResource("1_lqvv6")

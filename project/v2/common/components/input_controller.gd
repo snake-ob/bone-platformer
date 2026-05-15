@@ -1,10 +1,6 @@
 extends Node
 class_name InputController
 
-# --- Settings ---
-@export var hold_threshold: float = 0.25
-@export var combo_time: float = 0.6
-
 # --- Movement ---
 var move_axis: float = 0.0
 var jump_requested: bool = false
@@ -12,21 +8,10 @@ var jump_held: bool = false
 var is_crouching: bool = false
 
 # --- Combat ---
-var press_start_time: float = 0.0
-var is_holding: bool = false
 var punch_requested: bool = false
+var punch_start_time: float = 0.0
 var punch_held: bool = false
-var combo_step: int = 0
-
-# -- Timers --
-@onready var hold_timer: Timer = $HoldTimer
-@onready var combo_timer: Timer
-
-func _ready() -> void:
-	combo_timer = Timer.new()
-	add_child(combo_timer)
-	combo_timer.one_shot = true
-	combo_timer.timeout.connect(_on_combo_timeout)
+var buffered_punch
 
 func _input(event):
 	if event.is_action_pressed("ui_jump"):jump_requested = true
@@ -42,34 +27,19 @@ func _process(delta):
 
 func _handle_punch_press():
 	punch_requested = true
-	is_holding = true
-	press_start_time = Time.get_ticks_msec()
-	hold_timer.start()
+	if buffered_punch != null:
+		punch_held = true
 
 func _handle_punch_release():
-	var duration = (Time.get_ticks_msec() - press_start_time) / 1000
-	punch_held = duration >= hold_threshold
-	is_holding = false
-
+	punch_held = false
 # --- Consumption (called by states) ---
-
-func _on_combo_timeout():
-	reset_combo()
-
-func reset_combo():
-	combo_step = 0
-	combo_timer.stop()
 	
 func consume_punch() -> Dictionary:
-	var punch_data = {"requested": punch_requested,"held": punch_held, "combo": combo_step}
+	var punch_data = {"requested": punch_requested,"is_held": punch_held}
 	if punch_requested:
 		punch_requested = false
-		hold_timer.stop()
+	buffered_punch = null
 	return punch_data
-	
-func advance_combo():
-	combo_step += 1
-	combo_timer.start(combo_time)
 
 func consume_jump() -> bool:
 	if jump_requested:
@@ -79,3 +49,13 @@ func consume_jump() -> bool:
 
 func is_jump_held() -> bool:
 	return Input.is_action_pressed("ui_jump")
+	
+#Controller holds input in a buffer
+#PunchManager controls timing.
+#Punch is thrown. On frame 1 The punch manager takes it and says " this is jab"
+#Punch 2 is thrown. It sits in a buffer until the PunchManager is ready to call it.
+#Hold is default. On release, hold becomes false
+#PunchManager clears the buffer on combo reset
+
+# I think PunchRequested needs a rework. PunchRequested resets with every consumption
+# This currently kills held punch combos

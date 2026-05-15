@@ -10,6 +10,7 @@ func _ready():
 	ref.body = $Body
 	ref.animation = $Body/AnimationPlayer
 	ref.stats = $Stats
+	ref.punching = $PunchManager
 	
 	setup_nodes(self)
 	$StateMachine.setup_states(self, ref)

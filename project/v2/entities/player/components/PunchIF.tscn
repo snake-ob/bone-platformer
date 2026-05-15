@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://beernwqnmopc"]
+
+[ext_resource type="Script" uid="uid://p538ghee12je" path="res://v2/entities/player/components/punchinterface.gd" id="1_ysa1a"]
+
+[node name="Punch" type="Node" unique_id=1258500892]
+script = ExtResource("1_ysa1a")
